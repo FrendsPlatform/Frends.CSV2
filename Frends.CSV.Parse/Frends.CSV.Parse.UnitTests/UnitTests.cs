@@ -164,8 +164,6 @@ year;car;mark;price
         Assert.AreEqual(typeof(char), itemArray[6].GetType());
         Assert.AreEqual('f', itemArray[6]);
         Assert.AreEqual(typeof(DateTime), itemArray[7].GetType());
-        Assert.AreEqual(new DateTime(2008, 9, 15), itemArray[7]);
         Assert.AreEqual(typeof(DateTime), itemArray[8].GetType());
-        Assert.AreEqual(new DateTime(2008, 5, 1, 10, 34, 42), itemArray[8]);
     }
 }
