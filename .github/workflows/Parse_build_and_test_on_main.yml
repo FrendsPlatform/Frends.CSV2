@@ -1,0 +1,17 @@
+name: Parse build main
+
+on:
+  push:
+    branches:    
+      - main
+    paths:
+      - 'Frends.CSV.Parse/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: FrendsPlatform/FrendsTasks/.github/workflows/build_main.yml@main
+    with:
+      workdir: Frends.CSV.Parse
+    secrets:
+      badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
