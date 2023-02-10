@@ -8,7 +8,7 @@ namespace Frends.CSV.Parse.UnitTests;
 public class UnitTests
 {
     [TestMethod]
-    public void CreateTest_SkipRowsWithAutomaticHeaders()
+    public void ParseTest_SkipRowsWithAutomaticHeaders()
     {
         var csv = $@"asdasd
 Coolio
@@ -42,7 +42,7 @@ year;car;mark;price
     }
 
     [TestMethod]
-    public void CreateTest_WithColumnSpecAndMissingHeader()
+    public void ParseTest_WithColumnSpecAndMissingHeader()
     {
         var csv = @"1997;Ford;E350;2,34
 2000;Mercury;Cougar;2,38";
@@ -78,7 +78,7 @@ year;car;mark;price
     }
 
     [TestMethod]
-    public void CreateTest_WithNoColumnSpecAndNoHeader()
+    public void ParseTest_WithNoColumnSpecAndNoHeader()
     {
         var csv = @"1997;Ford;E350;2,34
 2000;Mercury;Cougar;2,38";
@@ -108,7 +108,7 @@ year;car;mark;price
     }
 
     [TestMethod]
-    public void CreateTest_WillAllKindOfDataTypes()
+    public void ParseTest_WillAllKindOfDataTypes()
     {
         var csv =
 @"THIS;is;header;row;with;some;random;stuff ;yes

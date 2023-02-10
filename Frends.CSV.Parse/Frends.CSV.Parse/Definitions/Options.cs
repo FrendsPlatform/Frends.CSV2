@@ -52,18 +52,4 @@ public class Options
     /// </summary>
     /// <example>fi-FI</example>
     public string CultureInfo { get; set; } = "";
-
-    /// <summary>
-    /// If set true, CSV's fields are never put in quotes
-    /// </summary>
-    /// <example>false</example>
-    [DefaultValue("false")]
-    public bool NeverAddQuotesAroundValues { get; set; }
-
-    /// <summary>
-    /// Input's NULL values will be replaced with this value.
-    /// </summary>
-    /// <example>foo</example>
-    [DisplayFormat(DataFormatString = "Text")]
-    public string ReplaceNullsWith { get; set; }
 }
