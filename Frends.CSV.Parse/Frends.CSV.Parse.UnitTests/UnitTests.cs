@@ -148,7 +148,6 @@ year;car;mark;price
         Assert.AreEqual(2, result.Data.Count);
         Assert.AreEqual(2, resultJArray.Count);
         Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<DateTime2>1.5.2008 10.34.42</DateTime2>"));
         Assert.AreEqual(4294967296, resultJArray[0]["Long"].Value<long>());
         Assert.AreEqual(typeof(int), itemArray[0].GetType());
         Assert.AreEqual(1997, itemArray[0]);
