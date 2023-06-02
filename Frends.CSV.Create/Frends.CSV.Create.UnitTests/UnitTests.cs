@@ -157,7 +157,7 @@ public class UnitTests
 
     [TestMethod]
     public void CreateTest_DecimalValues()
-    { 
+    {
         var json = @"[{
 ""foo"" : 0.1,
 ""bar"" : 1.00,
