@@ -328,9 +328,4 @@ year;car;mark;price
 
         Assert.AreEqual(options.TreatMissingFieldsAsNulls, false);
     }
-
-    public bool IsNullable<T>(T value)
-    {
-        return Nullable.GetUnderlyingType(typeof(T)) != null;
-    }
 }
