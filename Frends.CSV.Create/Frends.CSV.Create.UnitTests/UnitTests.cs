@@ -116,7 +116,7 @@ public class UnitTests
             XmlNodeElementName = "book"
         };
 
-        var options = new Options() { IncludeHeaderRow = false};
+        var options = new Options() { IncludeHeaderRow = false };
 
         var result = CSV.Create(input, options, default);
         Assert.IsTrue(result.Success);
