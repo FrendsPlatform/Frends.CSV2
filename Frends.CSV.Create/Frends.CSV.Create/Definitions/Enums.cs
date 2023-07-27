@@ -7,6 +7,7 @@ public enum CreateInputType
 {
 #pragma warning disable CS1591 // self explanatory
     List,
-    Json
+    Json,
+    Xml
 #pragma warning restore CS1591 // self explanatory
 }
