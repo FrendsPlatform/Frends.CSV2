@@ -1,5 +1,5 @@
 # Frends.CSV.Create
-Frends Task to create a CSV string from object or a JSON string.
+Frends Task to create a CSV string from object, JSON string or XML string.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) 
 [![Build](https://github.com/FrendsPlatform/Frends.CSV2/actions/workflows/Create_build_and_test_on_main.yml/badge.svg)](https://github.com/FrendsPlatform/Frends.CSV/actions)
