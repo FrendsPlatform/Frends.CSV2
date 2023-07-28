@@ -33,6 +33,36 @@ public class Input
     public string Json { get; set; }
 
     /// <summary>
+    /// Xml string to write to CSV. 
+    /// </summary>
+    /// <example>
+    /// &lt;?xml version="1.0" encoding="utf-8"?&gt;
+    /// &lt;Root&gt;
+    ///    &lt;Row&gt;
+    ///      &lt;Name&gt;Veijo&lt;/Name&gt;
+    ///      &lt;Street&gt;FrendsStr&lt;/Street&gt;
+    ///      &lt;StartDate&gt;2018-05-27T00:00:00&lt;/StartDate&gt;
+    ///    &lt;/Row&gt;
+    ///    &lt;Row&gt;
+    ///      &lt;Name&gt;Hodor&lt;/Name&gt;
+    ///      &lt;Street&gt;HodorsStr&lt;/Street&gt;
+    ///      &lt;StartDate&gt;2018-01-01T00:00:00&lt;/StartDate&gt;
+    ///    &lt;/Row&gt;
+    /// &lt;/Root&gt;
+    /// </example>
+    [UIHint(nameof(InputType), "", CreateInputType.Xml)]
+    [DisplayFormat(DataFormatString = "Xml")]
+    public string Xml { get; set; }
+
+    /// <summary>
+    /// Name of the node from which the data is to be queried.
+    /// </summary>
+    /// <example>book</example>
+    [UIHint(nameof(InputType), "", CreateInputType.Xml)]
+    [DisplayFormat(DataFormatString = "Text")]
+    public string XmlNodeElementName { get; set; }
+
+    /// <summary>
     /// Headers for the data. 
     /// Need to be in the same order as the underlying data
     /// </summary>

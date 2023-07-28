@@ -2,14 +2,15 @@
 using CsvHelper.Configuration;
 using Frends.CSV.Create.Definitions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace Frends.CSV.Create;
 
@@ -18,17 +19,8 @@ namespace Frends.CSV.Create;
 /// </summary>
 public class CSV
 {
-    /// Mem cleanup.
-    static CSV()
-    {
-        var currentAssembly = Assembly.GetExecutingAssembly();
-        var currentContext = AssemblyLoadContext.GetLoadContext(currentAssembly);
-        if (currentContext != null)
-            currentContext.Unloading += OnPluginUnloadingRequested;
-    }
-
     /// <summary>
-    /// Create a CSV string from object or from a JSON string.
+    /// Create a CSV string from a List, JSON string or XML string.
     /// [Documentation](https://tasks.frends.com/tasks/frends-tasks/Frends.CSV.Create)
     /// </summary>
     /// <param name="input">Input parameters</param>
@@ -60,6 +52,9 @@ public class CSV
             case CreateInputType.Json:
                 csv = JsonToCsvString(input.Json, config, options, cancellationToken);
                 break;
+            case CreateInputType.Xml:
+                csv = XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options, cancellationToken);
+                break;
         }
         return new Result(true, csv);
     }
@@ -83,10 +78,11 @@ public class CSV
 
         foreach (var row in inputData)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             foreach (var cell in row)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 csv.WriteField(cell ?? options.ReplaceNullsWith);
+            }
 
             csv.NextRecord();
         }
@@ -116,18 +112,52 @@ public class CSV
 
         foreach (var row in data)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             foreach (var cell in row)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 csv.WriteField(cell.Value ?? options.ReplaceNullsWith);
+            }
 
             csv.NextRecord();
         }
         return csvString.ToString();
     }
 
-    private static void OnPluginUnloadingRequested(AssemblyLoadContext obj)
+    private static string XmlToCsvString(string xml, string node, CsvConfiguration config, Options options, CancellationToken cancellationToken)
     {
-        obj.Unloading -= OnPluginUnloadingRequested;
+        using var csvString = new StringWriter();
+        using var csv = new CsvWriter(csvString, config);
+
+        XDocument xdoc = XDocument.Parse(xml);
+        IEnumerable<XElement> nodes;
+        if (string.IsNullOrEmpty(node))
+            nodes = xdoc.Root.Elements();
+        else
+            nodes = xdoc.Descendants().Where(p => p.Name.LocalName.Equals(node));
+
+        //Write the header row
+        if (config.HasHeaderRecord && nodes.Any())
+        {
+            var headers = nodes.Descendants().Select(n => n.Name.LocalName).Distinct().ToList();
+
+            foreach (var column in headers)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                csv.WriteField(column.ToString());
+            }
+            csv.NextRecord();
+        }
+
+        foreach (var column in nodes)
+        {
+            foreach (var cell in column.Elements().Select(n => n.Value).ToList())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                csv.WriteField(cell ?? options.ReplaceNullsWith);
+            }
+            csv.NextRecord();
+        }
+
+        return csvString.ToString();
     }
 }

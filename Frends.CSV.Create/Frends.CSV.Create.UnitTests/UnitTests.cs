@@ -6,6 +6,29 @@ namespace Frends.CSV.Create.UnitTests;
 [TestClass]
 public class UnitTests
 {
+    private readonly string _xml = @"<?xml version=""1.0""?>
+<catalog>
+   <info>Books</info>
+   <date>2023-07-27</date>
+   <book id = ""bk101"">
+       <author>Gambardella, Matthew</author>
+             <title>XML Developer's Guide</title>
+             <genre>Computer</genre>
+             <price>44.95</price>  
+             <publish_date>2000-10-01</publish_date>      
+             <description>An in-depth look at creating applications with XML.</description>
+   </book>
+   <book id = ""bk102"">
+       <author>Ralls, Kim</author>
+          <title>Midnight Rain</title>
+             <genre>Fantasy</genre>
+             <price>5.95</price>     
+             <publish_date>2000-12-16</publish_date> 
+             <description>A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.</description>
+   </book>
+</catalog>
+";
+
     [TestMethod]
     public void CreateTest_WriteFromListTable()
     {
@@ -62,6 +85,118 @@ public class UnitTests
         var result = CSV.Create(input, options, default);
         Assert.IsTrue(result.Success);
         Assert.AreEqual($"cool;what{Environment.NewLine}nice;no{Environment.NewLine}not;yes{Environment.NewLine}maybe;never{Environment.NewLine}", result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromXML()
+    {
+        var input = new Input()
+        {
+            InputType = CreateInputType.Xml,
+            Delimiter = ";",
+            Xml = _xml,
+            XmlNodeElementName = "book"
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual($"author;title;genre;price;publish_date;description{Environment.NewLine}Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromXMLWithoutHeaders()
+    {
+        var input = new Input()
+        {
+            InputType = CreateInputType.Xml,
+            Delimiter = ";",
+            Xml = _xml,
+            XmlNodeElementName = "book"
+        };
+
+        var options = new Options() { IncludeHeaderRow = false };
+
+        var result = CSV.Create(input, options, default);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual($"Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromXMLWithRoot()
+    {
+        var xml = @"<?xml version=""1.0""?>
+<catalog>
+    <book id = ""bk101"">
+        <author>Gambardella, Matthew</author>
+        <title>XML Developer's Guide</title>
+        <genre>Computer</genre>
+        <price>44.95</price>  
+        <publish_date>2000-10-01</publish_date>      
+        <description>An in-depth look at creating applications with XML.</description>
+    </book>
+    <book id = ""bk102"">
+        <author>Ralls, Kim</author>
+        <title>Midnight Rain</title>
+        <genre>Fantasy</genre>
+        <price>5.95</price>     
+        <publish_date>2000-12-16</publish_date> 
+        <description>A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.</description>
+    </book>
+</catalog>
+";
+        var input = new Input()
+        {
+            InputType = CreateInputType.Xml,
+            Delimiter = ";",
+            Xml = xml,
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual($"author;title;genre;price;publish_date;description{Environment.NewLine}Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
+
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromXMLWithoutHeadersWithRoot()
+    {
+        var xml = @"<?xml version=""1.0""?>
+<catalog>
+    <book id = ""bk101"">
+        <author>Gambardella, Matthew</author>
+        <title>XML Developer's Guide</title>
+        <genre>Computer</genre>
+        <price>44.95</price>  
+        <publish_date>2000-10-01</publish_date>      
+        <description>An in-depth look at creating applications with XML.</description>
+    </book>
+    <book id = ""bk102"">
+        <author>Ralls, Kim</author>
+        <title>Midnight Rain</title>
+        <genre>Fantasy</genre>
+        <price>5.95</price>     
+        <publish_date>2000-12-16</publish_date> 
+        <description>A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.</description>
+    </book>
+</catalog>
+";
+        var input = new Input()
+        {
+            InputType = CreateInputType.Xml,
+            Delimiter = ";",
+            Xml = xml
+        };
+
+        var options = new Options() { IncludeHeaderRow = false };
+
+        var result = CSV.Create(input, options, default);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual($"Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
+
     }
 
     [TestMethod]
