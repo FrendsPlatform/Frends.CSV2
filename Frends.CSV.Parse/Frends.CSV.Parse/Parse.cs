@@ -57,9 +57,7 @@ public class CSV
         // option.TreatMissingFieldsAsNulls is set to true for returning null values for missing fields.
         // Otherwise the default setting which throws a MissingFieldException is used
         if (options.TreatMissingFieldsAsNulls)
-        {
             configuration.MissingFieldFound = null;
-        }
 
         using TextReader sr = new StringReader(input.Csv);
         //Read rows before passing textreader to csvreader for so that header row would be in the correct place
@@ -76,14 +74,12 @@ public class CSV
         if (input.ColumnSpecifications.Any())
         {
             var typeList = new List<Type>();
-            
+
             foreach (var columnSpec in input.ColumnSpecifications)
             {
                 typeList.Add(ToType(columnSpec.Type, options.TreatMissingFieldsAsNulls));
                 headers.Add(columnSpec.Name);
             }
-            
-            
 
             while (csvReader.Read())
             {
