@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Loader;
 using System.Text;
 using System.Threading;
@@ -52,6 +53,12 @@ public class CSV
             IgnoreBlankLines = options.SkipEmptyRows
         };
 
+        // Setting the MissingFieldFound -delegate property of configuration to null when
+        // option.TreatMissingFieldsAsNulls is set to true for returning null values for missing fields.
+        // Otherwise the default setting which throws a MissingFieldException is used
+        if (options.TreatMissingFieldsAsNulls)
+            configuration.MissingFieldFound = null;
+
         using TextReader sr = new StringReader(input.Csv);
         //Read rows before passing textreader to csvreader for so that header row would be in the correct place
         for (var i = 0; i < options.SkipRowsFromTop; i++)
@@ -70,7 +77,7 @@ public class CSV
 
             foreach (var columnSpec in input.ColumnSpecifications)
             {
-                typeList.Add(ToType(columnSpec.Type));
+                typeList.Add(ToType(columnSpec.Type, options.TreatMissingFieldsAsNulls));
                 headers.Add(columnSpec.Name);
             }
 
@@ -133,17 +140,23 @@ public class CSV
         return new Result(true, resultData, headers, cultureInfo.Name, jtokenResult, xmlResult);
     }
 
-    private static Type ToType(ColumnType code)
+    /// <summary>
+    /// Converts enum to type definition, set useNullables to true to return nullable types
+    /// </summary>
+    /// <param name="code">ColumnType enum</param>
+    /// <param name="useNullables">If set to true, returns types as nullables. Used for TreatMissingFieldsAsNulls option</param>
+    /// <returns></returns>
+    private static Type ToType(ColumnType code, bool useNullables)
     {
         return code switch
         {
-            ColumnType.Boolean => typeof(bool),
-            ColumnType.Char => typeof(char),
-            ColumnType.DateTime => typeof(DateTime),
-            ColumnType.Decimal => typeof(decimal),
-            ColumnType.Double => typeof(double),
-            ColumnType.Int => typeof(int),
-            ColumnType.Long => typeof(long),
+            ColumnType.Boolean => useNullables ? typeof(bool?) : typeof(bool),
+            ColumnType.Char => useNullables ? typeof(char?) : typeof(char),
+            ColumnType.DateTime => useNullables ? typeof(DateTime?) : typeof(DateTime),
+            ColumnType.Decimal => useNullables ? typeof(decimal?) : typeof(decimal),
+            ColumnType.Double => useNullables ? typeof(double?) : typeof(double),
+            ColumnType.Int => useNullables ? typeof(int?) : typeof(int),
+            ColumnType.Long => useNullables ? typeof(long?) : typeof(long),
             ColumnType.String => typeof(string),
             _ => null,
         };
