@@ -157,7 +157,6 @@ public class CSV
                     writer.WriteStartElement("Row");
                 else
                     writer.WriteStartElement(options.XmlRowElementName);
-                
 
                 for (var i = 0; i < headers.Count; i++)
                 {
