@@ -27,8 +27,6 @@ public class UnitTests
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        var xmlToString = result.Xml.ToString();
-        Console.WriteLine(xmlToString);
         Assert.IsNotNull(result.Xml);
     }
 
@@ -56,12 +54,8 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        var xmlToString = result.Xml.ToString();
-
-        Console.WriteLine(result.Xml);
-
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<year>2000</year>"));
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(result.Xml.Contains("<year>2000</year>"));
     }
 
     [Test]
@@ -90,12 +84,8 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        var xmlToString = result.Xml.ToString();
-
-        Console.WriteLine(xmlToString);
-
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<Year>2000</Year>"));
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(result.Xml.Contains("<Year>2000</Year>"));
     }
 
     [Test]
@@ -118,12 +108,8 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        var xmlToString = result.Xml.ToString();
-
-        Console.WriteLine(result.Xml);
-
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<0>2000</0>"));
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(result.Xml.Contains("<0>2000</0>"));
     }
 
     [Test]
@@ -159,11 +145,7 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        var xmlToString = result.Xml.ToString();
-
-        Console.WriteLine(result.Xml);
-
-        Assert.IsNotNull(xmlToString);
+        Assert.IsNotNull(result.Xml);
     }
 
     [Test]
@@ -190,12 +172,7 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-
-        var resultXml = result.Xml;
-
-        Console.WriteLine(result.Xml);
-        Assert.IsTrue(condition: resultXml.ToString()?.Contains("<header3 />"));
-
+        Assert.IsTrue(condition: result.Xml.Contains("<header3 />"));
     }
 
     [Test]
@@ -221,11 +198,7 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-
-        var resultXml = result.Xml;
-
-        Console.WriteLine(result.Xml);
-        Assert.IsTrue(condition: resultXml.ToString()?.Contains("<2 />"));
+        Assert.IsTrue(condition: result.Xml.Contains("<2 />"));
     }
 
     [Test]
@@ -260,7 +233,13 @@ year;car;mark;price
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        Console.WriteLine(result.Xml.ToString());
+        Assert.IsTrue(result.Xml.Contains("<Decimal />"));
+        Assert.IsTrue(result.Xml.Contains("<DateTime />"));
+        Assert.IsTrue(result.Xml.Contains("<Int />"));
+        Assert.IsTrue(result.Xml.Contains("<Long />"));
+        Assert.IsTrue(result.Xml.Contains("<Double />"));
+        Assert.IsTrue(result.Xml.Contains("<Boolean />"));
+        Assert.IsTrue(result.Xml.Contains("<Char />"));
     }
 
     [Test]
@@ -286,5 +265,6 @@ year;car;mark;price
         };
 
         var ex = Assert.Throws<CsvHelper.MissingFieldException>(() => CSV.ConvertToXML(input, options, default));
+        Assert.IsTrue(ex.Message.StartsWith("Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
     }
 }
