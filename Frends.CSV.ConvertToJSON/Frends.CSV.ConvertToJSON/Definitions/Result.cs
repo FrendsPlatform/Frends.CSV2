@@ -3,7 +3,7 @@
 using Newtonsoft.Json.Linq;
 
 /// <summary>
-/// Result class usually contains properties of the return object.
+/// Result class..
 /// </summary>
 public class Result
 {
