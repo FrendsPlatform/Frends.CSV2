@@ -1,4 +1,4 @@
-name: ConvertToJson_release
+name: ConvertToJSON_release
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/release.yml@main
     with:
-      workdir: Frends.FTPS.ConvertToJson
+      workdir: Frends.FTPS.ConvertToJSON
     secrets:
       feed_api_key: ${{ secrets.TASKS_FEED_API_KEY }}
       

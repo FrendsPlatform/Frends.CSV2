@@ -1,18 +1,18 @@
-name: ConvertToJson_build_main
+name: ConvertToJSON_build_main
 
 on:
   push:
     branches-ignore:    
       - main
     paths:
-      - 'Frends.CSV.ConvertToJson/**'
+      - 'Frends.CSV.ConvertToJSON/**'
   workflow_dispatch:
 
 jobs:
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/linux_build_main.yml@main
     with:
-      workdir: Frends.CSV.ConvertToJson
+      workdir: Frends.CSV.ConvertToJSON
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
       test_feed_api_key: ${{ secrets.TASKS_TEST_FEED_API_KEY }}

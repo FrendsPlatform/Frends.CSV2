@@ -1,8 +1,9 @@
 namespace Frends.CSV.ConvertToJSON.Tests;
 
-using Frends.CSV.ConvertToJSON.Definitions;
-using NUnit.Framework;
 using System;
+using Frends.CSV.ConvertToJSON.Definitions;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 /// <summary>
 /// Test class.
@@ -14,7 +15,7 @@ internal class TestClass
     public void Test_WithEmptyFields()
     {
         var csv = @"string,1,2023-01-01,2,200,3,true,N
-              ,,,,,,,";
+,,,,,,,";
 
         var input = new Input()
         {
@@ -30,8 +31,14 @@ internal class TestClass
             SkipEmptyRows = false,
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(
+            JObject.Parse(@"{""0"": ""string"",""1"": ""1"",""2"": ""2023-01-01"",""3"": ""2"",""4"": ""200"",""5"": ""3"",""6"": ""true"",""7"": ""N""}"),
+            json[0]);
 
+        Assert.AreEqual(
+            JObject.Parse(@"{""0"": """",""1"": """",""2"": """",""3"": """",""4"": """",""5"": """",""6"": """",""7"": """"}"),
+            json[1]);
     }
 
     [Test]
@@ -57,8 +64,10 @@ year;car;mark;price
             SkipEmptyRows = false,
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(
+            JObject.Parse(@"{""year"":""1997"",""car"":""Ford"",""mark"":""E350"",""price"":""2,34""}"),
+            json[0]);
     }
 
     [Test]
@@ -86,8 +95,9 @@ year;car;mark;price
             CultureInfo = "fi-FI",
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(
+            JObject.Parse(@"{""Year"": 1997,""Car"": ""Ford"",""Mark"": ""E350"",""Price"": 2.34}"), json[0]);
     }
 
     [Test]
@@ -109,8 +119,9 @@ year;car;mark;price
             CultureInfo = "fi-FI",
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(
+            JObject.Parse(@"{""0"": ""1997"",""1"": ""Ford"",""2"": ""E350"",""3"": ""2,34""}"), json[0]);
     }
 
     [Test]
@@ -145,18 +156,19 @@ year;car;mark;price
             CultureInfo = "fi-FI",
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(
+            JObject.Parse(@"{""Int"": 1997,""String"": ""Fo;rd"",""Decimal"": 2.34,""Bool"": true,""Bool2"": true,""Long"": 4294967296,""Char"": ""f"",""DateTime"": ""2008-09-15T00:00:00"",""DateTime2"": ""2008-05-01T10:34:42+03:00""}"), json[0]);
     }
 
     [Test]
     public void TestConvertToJSONTreatMissingFieldsAsNullSetToTrue()
     {
         var csv =
-            @"header1,header2,header3
-                value1,value2,value3
-                value1,value2,value3
-                value1,value2";
+@"header1,header2,header3
+value1,value2,value3
+value1,value2,value3
+value1,value2";
 
         var input = new Input()
         {
@@ -172,17 +184,17 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = true,
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(JArray.Parse(@"[{""header1"": ""value1"",""header2"": ""value2"",""header3"": ""value3""},{""header1"": ""value1"",""header2"": ""value2"",""header3"": ""value3""},{""header1"": ""value1"",""header2"": ""value2"",""header3"": null}]"), json);
     }
 
     [Test]
     public void TestConvertToJSONTreatMissingFieldsAsNullSetToTrueNoHeader()
     {
         var csv =
-            @"value1,value2,value3
-              value1,value2,value3
-              value1,value2";
+@"value1,value2,value3
+value1,value2,value3
+value1,value2";
 
         var input = new Input()
         {
@@ -198,8 +210,8 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = true,
         };
 
-        var result = CSV.ConvertToJSON(input, options, default);
-
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(JArray.Parse(@"[{""0"": ""value1"",""1"": ""value2"",""2"": ""value3""},{""0"": ""value1"",""1"": ""value2"",""2"": ""value3""},{""0"": ""value1"",""1"": ""value2"",""2"": null}]"), json);
     }
 
     [Test]
@@ -233,32 +245,8 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = true,
         };
 
-        var result = CSV.ConvertToJSON(input, options, default).Json.ToString();
-        Console.WriteLine(result);
-        Assert.AreEqual(
-@"[
-  {
-    ""String"": ""string"",
-    ""Decimal"": 1.0,
-    ""DateTime"": ""2023-01-01T00:00:00"",
-    ""Int"": 2,
-    ""Long"": 200,
-    ""Double"": 3.0,
-    ""Boolean"": true,
-    ""Char"": ""N""
-  },
-  {
-    ""String"": ""              "",
-    ""Decimal"": null,
-    ""DateTime"": null,
-    ""Int"": null,
-    ""Long"": null,
-    ""Double"": null,
-    ""Boolean"": null,
-    ""Char"": null
-  }
-]",
-result);
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual(JArray.Parse(@"[{""String"": ""string"",""Decimal"": 1.0,""DateTime"": ""2023-01-01T00:00:00"",""Int"": 2,""Long"": 200,""Double"": 3.0,""Boolean"": true,""Char"": ""N""},{""String"": ""              "",""Decimal"": null,""DateTime"": null,""Int"": null,""Long"": null,""Double"": null,""Boolean"": null,""Char"": null}]"), json);
     }
 
     [Test]

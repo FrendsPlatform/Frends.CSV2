@@ -3,7 +3,7 @@ Frends Task for converting CSV string to JToken.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Build](https://github.com/FrendsPlatform/Frends.CSV2/actions/workflows/ConvertToJSON_build_and_test_on_main.yml/badge.svg)](https://github.com/FrendsPlatform/Frends.CSV2/actions)
-![Coverage](https://app-github-custom-badges.azurewebsites.net/Badge?key=FrendsPlatform/Frends.CSV2/Frends.CSV.ConvertToJson|main)
+![Coverage](https://app-github-custom-badges.azurewebsites.net/Badge?key=FrendsPlatform/Frends.CSV2/Frends.CSV.ConvertToJSON|main)
 
 ## Installing
 
