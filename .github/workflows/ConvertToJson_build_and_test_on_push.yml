@@ -1,4 +1,4 @@
-name: ConvertToJSON_build_main
+name: ConvertToJSON build main
 
 on:
   push:
