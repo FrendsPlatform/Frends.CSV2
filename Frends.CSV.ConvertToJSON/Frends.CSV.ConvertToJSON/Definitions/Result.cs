@@ -3,7 +3,7 @@
 using Newtonsoft.Json.Linq;
 
 /// <summary>
-/// Result class.
+/// Result class with private setters.
 /// </summary>
 public class Result
 {
