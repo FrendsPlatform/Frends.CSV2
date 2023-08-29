@@ -13,7 +13,7 @@
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <Description>Frends Task to Convert CSV string content to a JToken.</Description>
 	  <PackageProjectUrl>https://frends.com/</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/FrendsPlatform/Frends.Files/tree/main/Frends.CSV2.ConvertToJSON</RepositoryUrl>
+	  <RepositoryUrl>https://github.com/FrendsPlatform/Frends.CSV2/tree/main/Frends.CSV.ConvertToJSON</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
