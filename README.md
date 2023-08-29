@@ -4,6 +4,7 @@ Frends Task to process CSV files.
 
 # Tasks
 
+- [Frends.CSV.ConvertToJSON](Frends.CSV.ConvertToJSON/README.md)
 - [Frends.CSV.ConvertToXML](Frends.CSV.ConvertToXML/README.md)
 - [Frends.CSV.Create](Frends.CSV.Create/README.md)
 - [Frends.CSV.Parse](Frends.CSV.Parse/README.md)
