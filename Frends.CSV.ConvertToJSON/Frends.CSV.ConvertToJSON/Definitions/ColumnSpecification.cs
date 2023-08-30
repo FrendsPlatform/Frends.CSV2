@@ -1,12 +1,12 @@
 ﻿namespace Frends.CSV.ConvertToJSON.Definitions;
 
 /// <summary>
-/// ColumnSpecification values
+/// ColumnSpecification values.
 /// </summary>
 public class ColumnSpecification
 {
     /// <summary>
-    /// Name of the resulting column
+    /// Name of the resulting column.
     /// </summary>
     /// <example>foo</example>
     public string Name { get; set; }
