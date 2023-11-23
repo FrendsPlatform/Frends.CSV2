@@ -289,7 +289,7 @@ year;car;mark;price
             Assert.IsNull(itemArray[6]);
             Assert.IsNull(itemArray[7]);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Assert.Fail("Should not throw an exception");
         }
@@ -327,5 +327,36 @@ year;car;mark;price
         var options = new Options();
 
         Assert.AreEqual(options.TreatMissingFieldsAsNulls, false);
+    }
+
+    [TestMethod]
+    public void TestParse_WithoutTrimOption()
+    {
+        var options = new Options()
+        {
+            ContainsHeaderRow = true,
+            CultureInfo = "fi-FI",
+            TreatMissingFieldsAsNulls = false,
+            TrimOutput = false
+        };
+
+        var csv = @"First; Second; Number; Date
+Foo; bar; 100; 2000-01-01";
+
+        var input = new Input
+        {
+            ColumnSpecifications = new[]
+            {
+                new ColumnSpecification() {Name = "First", Type = ColumnType.String},
+                new ColumnSpecification() {Name = "Second", Type = ColumnType.String},
+                new ColumnSpecification() {Name = "Number", Type = ColumnType.Int},
+                new ColumnSpecification() {Name = "Date", Type = ColumnType.DateTime}
+            },
+            Delimiter = ";",
+            Csv = csv
+        };
+
+        var result = CSV.Parse(input,options, default);
+        Assert.AreEqual(" bar", result.Data[0][1]);
     }
 }

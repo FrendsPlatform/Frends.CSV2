@@ -49,7 +49,7 @@ public class CSV
         {
             HasHeaderRecord = options.ContainsHeaderRow,
             Delimiter = input.Delimiter,
-            TrimOptions = options.TrimOutput ? TrimOptions.None : TrimOptions.Trim,
+            TrimOptions = options.TrimOutput ? TrimOptions.Trim : TrimOptions.None,
             IgnoreBlankLines = options.SkipEmptyRows
         };
 
