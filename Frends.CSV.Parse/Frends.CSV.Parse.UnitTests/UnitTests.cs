@@ -356,7 +356,7 @@ Foo; bar; 100; 2000-01-01";
             Csv = csv
         };
 
-        var result = CSV.Parse(input,options, default);
+        var result = CSV.Parse(input, options, default);
         Assert.AreEqual(" bar", result.Data[0][1]);
     }
 }
