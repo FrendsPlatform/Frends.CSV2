@@ -1,7 +1,6 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using System.ComponentModel.DataAnnotations;
 
 namespace Frends.CSV.Parse.UnitTests;
 
@@ -194,7 +193,7 @@ year;car;mark;price
         var result = CSV.Parse(input, options, default);
 
         var resultJson = (JArray)result.Jtoken;
-        Assert.AreEqual(resultJson[2].Value<string>("header3"), null);
+        Assert.IsNull(resultJson[2].Value<string>("header3"));
 
         var resultXml = result.Xml;
         Assert.IsTrue(condition: resultXml.ToString()?.Contains("<header3 />"));
@@ -202,7 +201,7 @@ year;car;mark;price
         var resultData = result.Data;
         var nullItem = resultData[2][2];
 
-        Assert.AreEqual(nullItem, null);
+        Assert.IsNull(nullItem);
     }
 
     [TestMethod]
@@ -230,7 +229,7 @@ year;car;mark;price
         var result = CSV.Parse(input, options, default);
 
         var resultJson = (JArray)result.Jtoken;
-        Assert.AreEqual(resultJson[2].Value<string>("2"), null);
+        Assert.IsNull(resultJson[2].Value<string>("2"));
 
         var resultXml = result.Xml;
         Assert.IsTrue(condition: resultXml.ToString()?.Contains("<2 />"));
@@ -238,7 +237,7 @@ year;car;mark;price
         var resultData = result.Data;
         var nullItem = resultData[2][2];
 
-        Assert.AreEqual(nullItem, null);
+        Assert.IsNull(nullItem);
     }
 
     [TestMethod]
@@ -318,7 +317,7 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = false
         };
 
-        var result = CSV.Parse(input, options, default);
+        CSV.Parse(input, options, default);
     }
 
     [TestMethod]
@@ -326,7 +325,7 @@ year;car;mark;price
     {
         var options = new Options();
 
-        Assert.AreEqual(options.TreatMissingFieldsAsNulls, false);
+        Assert.IsFalse(options.TreatMissingFieldsAsNulls);
     }
 
     [TestMethod]
