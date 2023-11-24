@@ -1,7 +1,6 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using System.ComponentModel.DataAnnotations;
 
 namespace Frends.CSV.Parse.UnitTests;
 
@@ -194,7 +193,7 @@ year;car;mark;price
         var result = CSV.Parse(input, options, default);
 
         var resultJson = (JArray)result.Jtoken;
-        Assert.AreEqual(resultJson[2].Value<string>("header3"), null);
+        Assert.IsNull(resultJson[2].Value<string>("header3"));
 
         var resultXml = result.Xml;
         Assert.IsTrue(condition: resultXml.ToString()?.Contains("<header3 />"));
@@ -202,7 +201,7 @@ year;car;mark;price
         var resultData = result.Data;
         var nullItem = resultData[2][2];
 
-        Assert.AreEqual(nullItem, null);
+        Assert.IsNull(nullItem);
     }
 
     [TestMethod]
@@ -230,7 +229,7 @@ year;car;mark;price
         var result = CSV.Parse(input, options, default);
 
         var resultJson = (JArray)result.Jtoken;
-        Assert.AreEqual(resultJson[2].Value<string>("2"), null);
+        Assert.IsNull(resultJson[2].Value<string>("2"));
 
         var resultXml = result.Xml;
         Assert.IsTrue(condition: resultXml.ToString()?.Contains("<2 />"));
@@ -238,7 +237,7 @@ year;car;mark;price
         var resultData = result.Data;
         var nullItem = resultData[2][2];
 
-        Assert.AreEqual(nullItem, null);
+        Assert.IsNull(nullItem);
     }
 
     [TestMethod]
@@ -289,7 +288,7 @@ year;car;mark;price
             Assert.IsNull(itemArray[6]);
             Assert.IsNull(itemArray[7]);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Assert.Fail("Should not throw an exception");
         }
@@ -318,7 +317,7 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = false
         };
 
-        var result = CSV.Parse(input, options, default);
+        CSV.Parse(input, options, default);
     }
 
     [TestMethod]
@@ -326,6 +325,37 @@ year;car;mark;price
     {
         var options = new Options();
 
-        Assert.AreEqual(options.TreatMissingFieldsAsNulls, false);
+        Assert.IsFalse(options.TreatMissingFieldsAsNulls);
+    }
+
+    [TestMethod]
+    public void TestParse_WithoutTrimOption()
+    {
+        var options = new Options()
+        {
+            ContainsHeaderRow = true,
+            CultureInfo = "fi-FI",
+            TreatMissingFieldsAsNulls = false,
+            TrimOutput = false
+        };
+
+        var csv = @"First; Second; Number; Date
+Foo; bar; 100; 2000-01-01";
+
+        var input = new Input
+        {
+            ColumnSpecifications = new[]
+            {
+                new ColumnSpecification() {Name = "First", Type = ColumnType.String},
+                new ColumnSpecification() {Name = "Second", Type = ColumnType.String},
+                new ColumnSpecification() {Name = "Number", Type = ColumnType.Int},
+                new ColumnSpecification() {Name = "Date", Type = ColumnType.DateTime}
+            },
+            Delimiter = ";",
+            Csv = csv
+        };
+
+        var result = CSV.Parse(input, options, default);
+        Assert.AreEqual(" bar", result.Data[0][1]);
     }
 }
