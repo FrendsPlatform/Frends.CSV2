@@ -20,7 +20,7 @@ namespace Frends.CSV.Parse;
 public class CSV
 {
     /// <summary>
-    /// Parse string CSV content to an object.
+    /// Frends Task for parsing CSV string.
     /// [Documentation](https://tasks.frends.com/tasks/frends-tasks/Frends.CSV.Parse)
     /// </summary>
     /// <param name="input">Input parameters</param>

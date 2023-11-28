@@ -2,7 +2,7 @@ using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Frends.CSV.Parse.UnitTests;
+namespace Frends.CSV.Parse.Tests;
 
 [TestClass]
 public class UnitTests

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2023-11-28
+### Fixed
+- Fixed documentational issues and changed Jtoken result object type to dynamic.
+
 ## [1.1.1] - 2023-11-23
 ### Fixed
 - Fixed issue with inverted Trim option by inverting the if statement.
