@@ -35,7 +35,7 @@ public class Result
     /// Result as JToken.
     /// </summary>
     /// <example>{[ {"value": "1", "foos": "foo", "bars": "bar"} ]}</example>
-    public object Jtoken { get; private set; }
+    public dynamic Jtoken { get; private set; }
 
     /// <summary>
     /// Result as XML.
