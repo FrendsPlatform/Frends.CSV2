@@ -271,27 +271,17 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = true
         };
 
-        // The boxed type cannot be checked against Nullable<T> so to make sure no exception gets
-        // thrown when TreatMissingFieldsAsNulls is set to true have to check if exception is thrown
-        // when trying to insert empty values in the data
-        try
-        {
-            var result = CSV.Parse(input, options, default);
-            var resultData = result.Data;
-            var itemArray = resultData[1];
+        var result = CSV.Parse(input, options, default);
+        var resultData = result.Data;
+        var itemArray = resultData[1];
 
-            Assert.IsNull(itemArray[1]);
-            Assert.IsNull(itemArray[2]);
-            Assert.IsNull(itemArray[3]);
-            Assert.IsNull(itemArray[4]);
-            Assert.IsNull(itemArray[5]);
-            Assert.IsNull(itemArray[6]);
-            Assert.IsNull(itemArray[7]);
-        }
-        catch (Exception)
-        {
-            Assert.Fail("Should not throw an exception");
-        }
+        Assert.IsNull(itemArray[1]);
+        Assert.IsNull(itemArray[2]);
+        Assert.IsNull(itemArray[3]);
+        Assert.IsNull(itemArray[4]);
+        Assert.IsNull(itemArray[5]);
+        Assert.IsNull(itemArray[6]);
+        Assert.IsNull(itemArray[7]);
     }
 
     [TestMethod]

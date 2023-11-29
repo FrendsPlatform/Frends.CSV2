@@ -12,7 +12,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Frends Task for parsing CSV string.</Description>
 	<PackageProjectUrl>https://frends.com/</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/FrendsPlatform/Frends.CSV</RepositoryUrl>
+	<RepositoryUrl>https://github.com/FrendsPlatform/Frends.CSV2/tree/main/Frends.CSV.Parse</RepositoryUrl>
   </PropertyGroup>
 	
   <ItemGroup>
