@@ -1,6 +1,7 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using System.Xml;
 
 namespace Frends.CSV.Parse.Tests;
 
@@ -32,12 +33,12 @@ year;car;mark;price
 
         var result = CSV.Parse(input, options, default);
         dynamic resultJArray = result.Jtoken;
-        var xmlToString = result.Xml.ToString();
 
         Assert.AreEqual(2, result.Data.Count);
         Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<year>2000</year>"));
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<year>2000</year>"));
         Assert.AreEqual("2,34", resultJArray[0].price.ToString());
     }
 
@@ -68,12 +69,12 @@ year;car;mark;price
 
         var result = CSV.Parse(input, options, default);
         var resultJArray = (JArray)result.Jtoken;
-        var xmlToString = result.Xml.ToString();
 
         Assert.AreEqual(2, result.Data.Count);
         Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<Year>2000</Year>"));
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<Year>2000</Year>"));
         Assert.AreEqual(2.34, resultJArray[0]["Price"].Value<double>());
     }
 
@@ -98,13 +99,13 @@ year;car;mark;price
 
         var result = CSV.Parse(input, options, default);
         var resultJArray = (JArray)result.Jtoken;
-        var xmlToString = result.Xml.ToString();
 
         Assert.AreEqual(2, result.Data.Count);
         Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(xmlToString);
-        Assert.IsTrue(xmlToString.Contains("<0>2000</0>"));
-        Assert.AreEqual("2,34", resultJArray[0]["3"].Value<string>());
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<Column1>2000</Column1>"));
+        Assert.AreEqual("2,34", resultJArray[0]["Column4"].Value<string>());
     }
 
     [TestMethod]
@@ -141,13 +142,13 @@ year;car;mark;price
 
         var result = CSV.Parse(input, options, default);
         var resultJArray = (JArray)result.Jtoken;
-        var xmlToString = result.Xml.ToString();
         var resultData = result.Data;
         var itemArray = resultData[0];
 
         Assert.AreEqual(2, result.Data.Count);
         Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(xmlToString);
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
         Assert.AreEqual(4294967296, resultJArray[0]["Long"].Value<long>());
         Assert.AreEqual(typeof(int), itemArray[0].GetType());
         Assert.AreEqual(1997, itemArray[0]);
@@ -178,7 +179,7 @@ year;car;mark;price
 
         var input = new Input()
         {
-            ColumnSpecifications = new ColumnSpecification[0],
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
             Delimiter = ",",
             Csv = csv
         };
@@ -195,8 +196,8 @@ year;car;mark;price
         var resultJson = (JArray)result.Jtoken;
         Assert.IsNull(resultJson[2].Value<string>("header3"));
 
-        var resultXml = result.Xml;
-        Assert.IsTrue(condition: resultXml.ToString()?.Contains("<header3 />"));
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<header3 />"));
 
         var resultData = result.Data;
         var nullItem = resultData[2][2];
@@ -214,7 +215,7 @@ year;car;mark;price
 
         var input = new Input()
         {
-            ColumnSpecifications = new ColumnSpecification[0],
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
             Delimiter = ",",
             Csv = csv
         };
@@ -229,10 +230,10 @@ year;car;mark;price
         var result = CSV.Parse(input, options, default);
 
         var resultJson = (JArray)result.Jtoken;
-        Assert.IsNull(resultJson[2].Value<string>("2"));
+        Assert.IsNull(resultJson[2].Value<string>("Column3"));
 
-        var resultXml = result.Xml;
-        Assert.IsTrue(condition: resultXml.ToString()?.Contains("<2 />"));
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<Column3 />"));
 
         var resultData = result.Data;
         var nullItem = resultData[2][2];
@@ -295,7 +296,7 @@ year;car;mark;price
                 value1,value2";
         var input = new Input()
         {
-            ColumnSpecifications = new ColumnSpecification[0],
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
             Delimiter = ",",
             Csv = csv
         };
@@ -348,4 +349,12 @@ Foo; bar; 100; 2000-01-01";
         var result = CSV.Parse(input, options, default);
         Assert.AreEqual(" bar", result.Data[0][1]);
     }
+
+    private static bool ValidateXml(string xml)
+    {
+        var doc = new XmlDocument();
+        doc.LoadXml(xml);
+        return true;
+    }
+
 }
