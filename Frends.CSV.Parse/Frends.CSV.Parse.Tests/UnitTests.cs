@@ -350,6 +350,32 @@ Foo; bar; 100; 2000-01-01";
         Assert.AreEqual(" bar", result.Data[0][1]);
     }
 
+    [TestMethod]
+    public void TestParse_ReplaceEmptyAndWhitespaceHeaders()
+    {
+        var options = new Options()
+        {
+            ContainsHeaderRow = true,
+            CultureInfo = "fi-FI",
+            TreatMissingFieldsAsNulls = false,
+            TrimOutput = false,
+            ReplaceHeaderWhitespaceWith = "empty"
+        };
+
+        var csv = "first;; \nfirst;row;data\nsecond;row;data";
+
+        var input = new Input
+        {
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
+            Delimiter = ";",
+            Csv = csv
+        };
+
+        var result = CSV.Parse(input, options, default);
+        Assert.AreEqual("empty", result.Headers[1]);
+        Assert.AreEqual("empty", result.Headers[2]);
+    }
+
     private static bool ValidateXml(string xml)
     {
         var doc = new XmlDocument();
