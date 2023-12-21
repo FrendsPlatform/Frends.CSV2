@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2023-12-20
+### Fixed
+- Empty and whitespace header values are now replaced if ReplaceHeaderWhitespaceWith is used.
+
 ## [1.2.0] - 2023-12-20
 ### Changed
 - Type of Xml-property of Result-object changed from object to string.
