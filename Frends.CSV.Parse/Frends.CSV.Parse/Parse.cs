@@ -87,9 +87,7 @@ public class CSV
                 headers = csvReader.HeaderRecord.ToList();
             else
                 foreach (string header in csvReader.HeaderRecord)
-                    if (string.IsNullOrEmpty(header))
-                        headers.Add(options.ReplaceHeaderWhitespaceWith);
-                    else if (string.IsNullOrWhiteSpace(header))
+                    if (string.IsNullOrEmpty(header) || string.IsNullOrWhiteSpace(header))
                         headers.Add(options.ReplaceHeaderWhitespaceWith);
                     else
                         headers.Add(header.Replace(" ", options.ReplaceHeaderWhitespaceWith));
