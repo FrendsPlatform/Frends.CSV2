@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Xml.Linq;
 using CsvHelper;
@@ -118,15 +122,21 @@ public class CSV
         CancellationToken cancellationToken
     )
     {
-        JToken input = JsonConvert.DeserializeObject<JToken>(
+        //stringify numbers
+        var jsonElement = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(
             json,
+            new JsonSerializerOptions { AllowTrailingCommas = true, }
+        );
+        string stringifiedJson = System.Text.Json.JsonSerializer.Serialize(
+            jsonElement,
+            new JsonSerializerOptions { Converters = { new NumberToStringConverter() } }
+        );
+
+        JToken input = JsonConvert.DeserializeObject<JToken>(
+            stringifiedJson,
             new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, }
         );
-        if (input is JObject)
-        {
-            JArray jsonArray = new() { input };
-            input = jsonArray;
-        }
+        input = input is JObject ? new JArray() { input } : input;
 
         //compute what are max sizes of arrays in all objects
         var limits = new Dictionary<string, int>();

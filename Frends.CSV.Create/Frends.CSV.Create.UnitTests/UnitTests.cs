@@ -388,4 +388,30 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
             result.CSV
         );
     }
+
+    [TestMethod]
+    public void CreateTest_SingleObject()
+    {
+        var json =
+            @"{
+""foo"" : ""bar"",
+}";
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = json
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+        Assert.AreEqual(
+            @"foo
+bar
+",
+            result.CSV
+        );
+    }
 }
