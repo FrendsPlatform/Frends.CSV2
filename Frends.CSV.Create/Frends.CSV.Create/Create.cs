@@ -92,112 +92,15 @@ public class CSV
 
     private static string JsonToCsvString(string json, CsvConfiguration config, Options options, CancellationToken cancellationToken)
     {
-        //stringify numbers
-        var jsonElement = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(
-            json,
-            new JsonSerializerOptions { AllowTrailingCommas = true, }
-        );
-        string stringifiedJson = System.Text.Json.JsonSerializer.Serialize(
-            jsonElement,
-            new JsonSerializerOptions { Converters = { new NumberToStringConverter() } }
-        );
-
+        json = StringifyJsonNumbers(json);
         JToken input = JsonConvert.DeserializeObject<JToken>(
-            stringifiedJson,
+            json,
             new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, }
         );
         input = input is JObject ? new JArray() { input } : input;
-
-        //compute what are max sizes of arrays in all objects
-        var limits = new Dictionary<string, int>();
-        foreach (var row in input)
-        {
-            JObject rowObject = JObject.FromObject(row);
-            IEnumerable<JToken> jTokens = rowObject.Descendants().Where(p => !p.HasValues);
-            JToken previousToken = null;
-
-            foreach (JToken jToken in jTokens)
-            {
-                //checking only one element of the same parent
-                if (previousToken == null || previousToken?.Parent?.Path != jToken?.Parent?.Path)
-                {
-                    if (jToken?.Parent?.Count > 1)
-                    {
-                        if (limits.TryGetValue(jToken.Parent.Path, out int limit))
-                        {
-                            if (limit < jToken.Parent.Count)
-                            {
-                                limits[jToken.Parent.Path] = jToken.Parent.Count;
-                            }
-                        }
-                        else
-                        {
-                            limits.Add(jToken.Parent.Path, jToken.Parent.Count);
-                        }
-                    }
-                }
-            }
-        }
-
-        //flatten json
-        List<Dictionary<string, string>> data = new();
-        foreach (var row in input)
-        {
-            JObject rowObject = JObject.FromObject(row);
-            IEnumerable<JToken> jTokens = rowObject.Descendants().Where(p => !p.HasValues);
-            JToken previousToken = null;
-
-            Dictionary<string, string> results = jTokens.Aggregate(
-                new Dictionary<string, string>(),
-                (properties, jToken) =>
-                {
-                    //skip adding if same parent, because we added all elements of array with the first occurance
-                    if (
-                        previousToken == null
-                        || previousToken?.Parent?.Path != jToken?.Parent?.Path
-                    )
-                    {
-                        //adding array properties
-                        if (limits.TryGetValue(jToken!.Parent!.Path, out int limit))
-                        {
-                            //adding first value for empty array
-                            if (jToken.Type == JTokenType.Null)
-                            {
-                                properties.Add(jToken.Parent.Path + "[0]", "");
-                            }
-                            else
-                            {
-                                //adding all children of an array to properties
-                                foreach (JToken child in jToken.Parent!.Children())
-                                {
-                                    properties.Add(
-                                        child.Path,
-                                        child.Type == JTokenType.Null ? null : child.ToString()
-                                    );
-                                }
-                            }
-
-                            //add empty values to even size of all arrays
-                            for (int i = jToken.Parent.Count; i < limit; i++)
-                            {
-                                properties.Add(jToken.Parent.Path + "[" + i + "]", "");
-                            }
-                        }
-                        else
-                        {
-                            //adding non-array properties
-                            properties.Add(
-                                jToken.Path,
-                                jToken.Type == JTokenType.Null ? null : jToken.ToString()
-                            );
-                        }
-                    }
-                    previousToken = jToken;
-                    return properties;
-                }
-            );
-            data.Add(results);
-        }
+        JArray inputArray = (JArray) input;
+        var limits = JsonArraysLimits(inputArray);
+        var data = FlattenJson(inputArray, limits);
 
         //CSV part
         using var csvString = new StringWriter();
@@ -264,5 +167,115 @@ public class CSV
         }
 
         return csvString.ToString();
+    }
+
+    private static string StringifyJsonNumbers(string json)
+    {
+        var jsonElement = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(
+            json,
+            new JsonSerializerOptions { AllowTrailingCommas = true, }
+        );
+        string stringifiedJson = System.Text.Json.JsonSerializer.Serialize(
+            jsonElement,
+            new JsonSerializerOptions { Converters = { new NumberToStringConverter() } }
+        );
+        return stringifiedJson;
+    }
+
+    private static Dictionary<string, int> JsonArraysLimits(JArray jArray)
+    {
+        var limits = new Dictionary<string, int>();
+        foreach (var row in jArray)
+        {
+            IEnumerable<JToken> jTokens = JObject.FromObject(row).Descendants().Where(p => !p.HasValues);
+            JToken previousToken = null;
+
+            foreach (JToken jToken in jTokens)
+            {
+                //checking only one element of the same parent
+                if (previousToken == null || previousToken?.Parent?.Path != jToken?.Parent?.Path)
+                {
+                    if (jToken?.Parent?.Count > 1)
+                    {
+                        if (limits.TryGetValue(jToken.Parent.Path, out int limit))
+                        {
+                            if (limit < jToken.Parent.Count)
+                            {
+                                limits[jToken.Parent.Path] = jToken.Parent.Count;
+                            }
+                        }
+                        else
+                        {
+                            limits.Add(jToken.Parent.Path, jToken.Parent.Count);
+                        }
+                    }
+                }
+            }
+        }
+        return limits;
+    }
+
+    private static List<Dictionary<string, string>> FlattenJson(JArray input, Dictionary<string, int> limits)
+    {
+        List<Dictionary<string, string>> data = new();
+        foreach (var row in input)
+        {
+            JObject rowObject = JObject.FromObject(row);
+            IEnumerable<JToken> jTokens = rowObject.Descendants().Where(p => !p.HasValues);
+            JToken previousToken = null;
+
+            Dictionary<string, string> results = jTokens.Aggregate(
+                new Dictionary<string, string>(),
+                (properties, jToken) =>
+                {
+                    //skip adding if same parent, because we added all elements of array with the first occurance
+                    if (
+                        previousToken == null
+                        || previousToken?.Parent?.Path != jToken?.Parent?.Path
+                    )
+                    {
+                        //adding array properties
+                        if (limits.TryGetValue(jToken!.Parent!.Path, out int limit))
+                        {
+                            //adding first value for empty array
+                            if (jToken.Type == JTokenType.Null)
+                            {
+                                properties.Add(jToken.Parent.Path + "[0]", "");
+                            }
+                            else
+                            {
+                                //adding all children of an array to properties
+                                foreach (JToken child in jToken.Parent!.Children())
+                                {
+                                    properties.Add(
+                                        child.Path,
+                                        child.Type == JTokenType.Null ? null : child.ToString()
+                                    );
+                                }
+                            }
+
+                            //add empty values to even size of all arrays
+                            for (int i = jToken.Parent.Count; i < limit; i++)
+                            {
+                                properties.Add(jToken.Parent.Path + "[" + i + "]", "");
+                            }
+                        }
+                        else
+                        {
+                            //adding non-array properties
+                            properties.Add(
+                                jToken.Path,
+                                jToken.Type == JTokenType.Null ? null : jToken.ToString()
+                            );
+                        }
+                    }
+                    previousToken = jToken;
+                    return properties;
+                }
+            );
+            data.Add(results);
+        }
+
+        return data;
     }
 }
