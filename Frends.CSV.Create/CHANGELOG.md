@@ -2,7 +2,7 @@
 
 ## [1.2.0] - 2024-05-06
 
-### Improved
+### Added
 
 - Input Json can be Array or Object
 - Json can have nested properties
