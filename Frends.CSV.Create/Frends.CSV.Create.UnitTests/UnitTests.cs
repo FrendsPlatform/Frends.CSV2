@@ -29,6 +29,62 @@ public class UnitTests
 </catalog>
 ";
 
+    private readonly string _jsonString =
+        @"
+[
+    {
+        ""user_data"":{
+         ""login"":""user1"",
+         ""phone"":""123321111"",
+         ""contact"":{
+            ""emails"":[
+               ""user11@frends.com"",
+               ""user12@frends.com""
+            ]
+         }
+      },
+      ""roles"":[
+         {
+            ""roles_list1"":[
+               ""role1_1"",
+               ""role1_2""
+            ]
+         },
+         {
+            ""roles_list2"":[
+               ""role2_1"",
+               ""role2_2""
+            ]
+         }
+      ],
+      ""activation_type"":""password""
+   },
+   {
+      ""user_data"":{
+         ""login"":""user2"",
+         ""phone"":""123322222"",
+         ""contact"":{
+            ""emails"":[
+               ""user21@frends.com"",
+               ""user22@frends.com"",
+               ""user23@frends.com""
+            ]
+         }
+      },
+      ""roles"":[
+         {
+            ""roles_list1"":null
+         },
+         {
+            ""roles_list2"":[
+               ""role2_1""
+            ]
+         }
+      ],
+      ""activation_type"":""password""
+   }
+]";
+
     [TestMethod]
     public void CreateTest_WriteFromListTable()
     {
@@ -71,20 +127,24 @@ public class UnitTests
     [TestMethod]
     public void CreateTest_WriteFromJSON()
     {
-        var json = @"[{""cool"":""nice"", ""what"": ""no""}, {""cool"":""not"", ""what"": ""yes""}, {""cool"":""maybe"", ""what"": ""never""}]";
+        var correct_result =
+            @"user_data.login;user_data.phone;user_data.contact.emails[0];user_data.contact.emails[1];user_data.contact.emails[2];roles[0].roles_list1[0];roles[0].roles_list1[1];roles[1].roles_list2[0];roles[1].roles_list2[1];activation_type
+user1;123321111;user11@frends.com;user12@frends.com;;role1_1;role1_2;role2_1;role2_2;password
+user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;;password
+";
 
         var input = new Input()
         {
             InputType = CreateInputType.Json,
             Delimiter = ";",
-            Json = json
+            Json = _jsonString
         };
 
         var options = new Options() { };
 
         var result = CSV.Create(input, options, default);
         Assert.IsTrue(result.Success);
-        Assert.AreEqual($"cool;what{Environment.NewLine}nice;no{Environment.NewLine}not;yes{Environment.NewLine}maybe;never{Environment.NewLine}", result.CSV);
+        Assert.AreEqual(correct_result, result.CSV);
     }
 
     [TestMethod]
@@ -158,7 +218,6 @@ public class UnitTests
         var result = CSV.Create(input, options, default);
         Assert.IsTrue(result.Success);
         Assert.AreEqual($"author;title;genre;price;publish_date;description{Environment.NewLine}Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
-
     }
 
     [TestMethod]
@@ -196,7 +255,6 @@ public class UnitTests
         var result = CSV.Create(input, options, default);
         Assert.IsTrue(result.Success);
         Assert.AreEqual($"Gambardella, Matthew;XML Developer's Guide;Computer;44.95;2000-10-01;An in-depth look at creating applications with XML.{Environment.NewLine}Ralls, Kim;Midnight Rain;Fantasy;5.95;2000-12-16;A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.{Environment.NewLine}", result.CSV);
-
     }
 
     [TestMethod]
@@ -310,5 +368,31 @@ public class UnitTests
 
         var result = CSV.Create(input, options, default);
         Assert.AreEqual($"foo;bar;baz{Environment.NewLine}0.1;1.00;0.000000000000000000000000000000000000000000000000000000001{Environment.NewLine}", result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_SingleObject()
+    {
+        var json =
+            @"{
+""foo"" : ""bar"",
+}";
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = json
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+        Assert.AreEqual(
+            @"foo
+bar
+",
+            result.CSV
+        );
     }
 }
