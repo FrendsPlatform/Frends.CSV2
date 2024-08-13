@@ -194,13 +194,14 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
             ManualHeaders = headers
         };
 
-        var options = new Options() {
+        var options = new Options()
+        {
             IncludeHeaderRow = true
         };
 
         var result = CSV.Create(input, options, default);
 
-        var expectedCsv = 
+        var expectedCsv =
             $"User ID;User Name;User Email;Account Plan;Account Balance{Environment.NewLine}" +
             $"1;John Doe;john.doe@example.com;Pro;100.5{Environment.NewLine}" +
             $"2;Jane Smith;jane.smith@example.com;Basic;50.75{Environment.NewLine}";

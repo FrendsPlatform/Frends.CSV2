@@ -105,7 +105,7 @@ public class CSV
 
         //If headers are specified manually
         if (input.SpecifyHeadersManually && input.ManualHeaders != null && input.ManualHeaders.Any())
-        { 
+        {
             //Write the manually specified header row
             if (config.HasHeaderRecord)
             {
