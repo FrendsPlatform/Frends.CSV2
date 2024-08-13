@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2024-08-12
+### Added
+- Added option to specify headers manually when creating a CSV from Json.
+
 ## [1.2.0] - 2024-05-06
 ### Added
 - Input Json can be Array or Object

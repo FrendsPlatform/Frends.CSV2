@@ -50,7 +50,7 @@ public class CSV
                 csv = ListToCsvString(input.Data, input.Headers, config, options, cancellationToken);
                 break;
             case CreateInputType.Json:
-                csv = JsonToCsvString(input.Json, config, options, cancellationToken);
+                csv = JsonToCsvString(input.Json, input, config, options, cancellationToken);
                 break;
             case CreateInputType.Xml:
                 csv = XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options, cancellationToken);
@@ -90,43 +90,73 @@ public class CSV
         return csvString.ToString();
     }
 
-    private static string JsonToCsvString(string json, CsvConfiguration config, Options options, CancellationToken cancellationToken)
+    private static string JsonToCsvString(string json, Input input, CsvConfiguration config, Options options, CancellationToken cancellationToken)
     {
         json = StringifyJsonNumbers(json);
-        JToken input = JsonConvert.DeserializeObject<JToken>(
+        JToken jToken = JsonConvert.DeserializeObject<JToken>(
             json,
             new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, }
         );
-        input = input is JObject ? new JArray() { input } : input;
-        JArray inputArray = (JArray) input;
-        var limits = JsonArraysLimits(inputArray);
-        var data = FlattenJson(inputArray, limits);
+        JArray inputArray = jToken is JObject ? new JArray { jToken } : (JArray)jToken;
 
         //CSV part
         using var csvString = new StringWriter();
         using var csv = new CsvWriter(csvString, config);
 
-        //Write the header row
-        if (config.HasHeaderRecord && data.Any())
-        {
-            foreach (var column in data.First().Keys)
+        //If headers are specified manually
+        if (input.SpecifyHeadersManually && input.ManualHeaders != null && input.ManualHeaders.Any())
+        { 
+            //Write the manually specified header row
+            if (config.HasHeaderRecord)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(column);
+                foreach (var header in input.ManualHeaders)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(header["HeaderName"]);
+                }
+                csv.NextRecord();
             }
 
-            csv.NextRecord();
+            //Write the data rows using the specified JSON paths
+            foreach (var row in inputArray)
+            {
+                foreach (var header in input.ManualHeaders)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var value = row.SelectToken(header["JsonPath"])?.ToString() ?? options.ReplaceNullsWith;
+                    csv.WriteField(value);
+                }
+                csv.NextRecord();
+            }
         }
-
-        foreach (var row in data)
+        else
         {
-            foreach (var cell in row)
+            var limits = JsonArraysLimits(inputArray);
+            var data = FlattenJson(inputArray, limits);
+
+            //Write the automatically generated header row
+            if (config.HasHeaderRecord && data.Any())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(cell.Value ?? options.ReplaceNullsWith);
+                foreach (var column in data.First().Keys)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(column);
+                }
+
+                csv.NextRecord();
             }
 
-            csv.NextRecord();
+            //Write the data rows
+            foreach (var row in data)
+            {
+                foreach (var cell in row)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(cell.Value ?? options.ReplaceNullsWith);
+                }
+
+                csv.NextRecord();
+            }
         }
         return csvString.ToString();
     }

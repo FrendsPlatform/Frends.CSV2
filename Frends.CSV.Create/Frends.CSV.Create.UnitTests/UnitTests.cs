@@ -148,6 +148,69 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
     }
 
     [TestMethod]
+    public void CreateTest_WriteFromJSONWithManualHeaders()
+    {
+        var inputJson = @"
+        [
+            {
+                ""user"": {
+                    ""id"": 1,
+                    ""name"": ""John Doe"",
+                    ""email"": ""john.doe@example.com""
+                },
+                ""account"": {
+                    ""plan"": ""Pro"",
+                    ""balance"": 100.5
+                }
+            },
+            {
+                ""user"": {
+                    ""id"": 2,
+                    ""name"": ""Jane Smith"",
+                    ""email"": ""jane.smith@example.com""
+                },
+                ""account"": {
+                    ""plan"": ""Basic"",
+                    ""balance"": 50.75
+                }
+            }
+        ]";
+
+        var headers = new List<Dictionary<string, string>>
+        {
+            new Dictionary<string, string> { { "HeaderName", "User ID" }, { "JsonPath", "$.user.id" } },
+            new Dictionary<string, string> { { "HeaderName", "User Name" }, { "JsonPath", "$.user.name" } },
+            new Dictionary<string, string> { { "HeaderName", "User Email" }, { "JsonPath", "$.user.email" } },
+            new Dictionary<string, string> { { "HeaderName", "Account Plan" }, { "JsonPath", "$.account.plan" } },
+            new Dictionary<string, string> { { "HeaderName", "Account Balance" }, { "JsonPath", "$.account.balance" } }
+        };
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = inputJson,
+            SpecifyHeadersManually = true,
+            ManualHeaders = headers
+        };
+
+        var options = new Options() {
+            IncludeHeaderRow = true
+        };
+
+        var result = CSV.Create(input, options, default);
+
+        var expectedCsv = 
+            $"User ID;User Name;User Email;Account Plan;Account Balance{Environment.NewLine}" +
+            $"1;John Doe;john.doe@example.com;Pro;100.5{Environment.NewLine}" +
+            $"2;Jane Smith;jane.smith@example.com;Basic;50.75{Environment.NewLine}";
+
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(expectedCsv, result.CSV);
+    }
+
+
+    [TestMethod]
     public void CreateTest_WriteFromXML()
     {
         var input = new Input()
