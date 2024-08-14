@@ -33,19 +33,19 @@ public class Input
     public string Json { get; set; }
 
     /// <summary>
-    /// If set true, allows the user to manually specify an array of headers which to generate.
+    /// If set true, allows the user to manually specify an array of columns which to generate.
     /// </summary>
     /// <example>false</example>
     [UIHint(nameof(InputType), "", CreateInputType.Json)]
     [DefaultValue("false")]
-    public bool SpecifyHeadersManually { get; set; }
+    public bool SpecifyColumnsManually { get; set; }
 
     /// <summary>
-    /// Custom headers for the data.
+    /// Custom columns for the data.
     /// </summary>
-    /// <example>{ Values, Foos, Bars, Dates }</example>
-    [UIHint(nameof(SpecifyHeadersManually), "", true)]
-    public List<Dictionary<string, string>> ManualHeaders { get; set; }
+    /// <example>{ "Column1", "Column2", "Column3" }</example>
+    [UIHint(nameof(SpecifyColumnsManually), "", true)]
+    public List<string> Columns { get; set; }
 
     /// <summary>
     /// Xml string to write to CSV. 

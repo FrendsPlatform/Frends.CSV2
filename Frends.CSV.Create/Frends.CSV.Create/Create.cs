@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -50,7 +51,7 @@ public class CSV
                 csv = ListToCsvString(input.Data, input.Headers, config, options, cancellationToken);
                 break;
             case CreateInputType.Json:
-                csv = JsonToCsvString(input.Json, input, config, options, cancellationToken);
+                csv = JsonToCsvString(input, config, options, cancellationToken);
                 break;
             case CreateInputType.Xml:
                 csv = XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options, cancellationToken);
@@ -90,40 +91,46 @@ public class CSV
         return csvString.ToString();
     }
 
-    private static string JsonToCsvString(string json, Input input, CsvConfiguration config, Options options, CancellationToken cancellationToken)
+    private static string JsonToCsvString(Input input, CsvConfiguration config, Options options, CancellationToken cancellationToken)
     {
-        json = StringifyJsonNumbers(json);
-        JToken jToken = JsonConvert.DeserializeObject<JToken>(
+        var json = StringifyJsonNumbers(input.Json);
+        var jToken = JsonConvert.DeserializeObject<JToken>(
             json,
             new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, }
         );
-        JArray inputArray = jToken is JObject ? new JArray { jToken } : (JArray)jToken;
+        var inputArray = jToken is JObject ? new JArray { jToken } : (JArray)jToken;
 
-        //CSV part
+        // CSV part
         using var csvString = new StringWriter();
         using var csv = new CsvWriter(csvString, config);
 
-        //If headers are specified manually
-        if (input.SpecifyHeadersManually && input.ManualHeaders != null && input.ManualHeaders.Any())
+        // If columns are specified manually
+        if (input.SpecifyColumnsManually)
         {
-            //Write the manually specified header row
+            // Validate if columns are null or empty
+            if (input.Columns == null || !input.Columns.Any())
+            {
+                throw new ArgumentException("Manual columns are specified but no columns are provided.");
+            }
+
+            // Write the manually specified header row
             if (config.HasHeaderRecord)
             {
-                foreach (var header in input.ManualHeaders)
+                foreach (var header in input.Headers)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    csv.WriteField(header["HeaderName"]);
+                    csv.WriteField(header);
                 }
                 csv.NextRecord();
             }
 
-            //Write the data rows using the specified JSON paths
+            // Write the data rows using the specified JSON paths
             foreach (var row in inputArray)
             {
-                foreach (var header in input.ManualHeaders)
+                foreach (var column in input.Columns)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var value = row.SelectToken(header["JsonPath"])?.ToString() ?? options.ReplaceNullsWith;
+                    var value = row.SelectToken(column)?.ToString() ?? options.ReplaceNullsWith;
                     csv.WriteField(value);
                 }
                 csv.NextRecord();
@@ -134,7 +141,7 @@ public class CSV
             var limits = JsonArraysLimits(inputArray);
             var data = FlattenJson(inputArray, limits);
 
-            //Write the automatically generated header row
+            // Write the automatically generated header row
             if (config.HasHeaderRecord && data.Any())
             {
                 foreach (var column in data.First().Keys)
@@ -146,7 +153,7 @@ public class CSV
                 csv.NextRecord();
             }
 
-            //Write the data rows
+            // Write the data rows
             foreach (var row in data)
             {
                 foreach (var cell in row)

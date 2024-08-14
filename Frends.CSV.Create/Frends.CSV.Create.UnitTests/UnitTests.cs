@@ -148,50 +148,38 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
     }
 
     [TestMethod]
-    public void CreateTest_WriteFromJSONWithManualHeaders()
+    public void CreateTest_WriteFromJSONWithManualColumns()
     {
-        var inputJson = @"
-        [
-            {
-                ""user"": {
-                    ""id"": 1,
-                    ""name"": ""John Doe"",
-                    ""email"": ""john.doe@example.com""
-                },
-                ""account"": {
-                    ""plan"": ""Pro"",
-                    ""balance"": 100.5
-                }
-            },
-            {
-                ""user"": {
-                    ""id"": 2,
-                    ""name"": ""Jane Smith"",
-                    ""email"": ""jane.smith@example.com""
-                },
-                ""account"": {
-                    ""plan"": ""Basic"",
-                    ""balance"": 50.75
-                }
-            }
-        ]";
-
-        var headers = new List<Dictionary<string, string>>
+        var headers = new List<string>
         {
-            new Dictionary<string, string> { { "HeaderName", "User ID" }, { "JsonPath", "$.user.id" } },
-            new Dictionary<string, string> { { "HeaderName", "User Name" }, { "JsonPath", "$.user.name" } },
-            new Dictionary<string, string> { { "HeaderName", "User Email" }, { "JsonPath", "$.user.email" } },
-            new Dictionary<string, string> { { "HeaderName", "Account Plan" }, { "JsonPath", "$.account.plan" } },
-            new Dictionary<string, string> { { "HeaderName", "Account Balance" }, { "JsonPath", "$.account.balance" } }
+            "Login",
+            "Phone",
+            "Primary Email",
+            "Secondary Email",
+            "Role List 1",
+            "Role List 2",
+            "Activation Type"
+        };
+
+        var columns = new List<string>
+        {
+            "$.user_data.login",
+            "$.user_data.phone",
+            "$.user_data.contact.emails[0]",
+            "$.user_data.contact.emails[1]",
+            "$.roles[0].roles_list1[0]",
+            "$.roles[1].roles_list2[0]",
+            "$.activation_type"
         };
 
         var input = new Input()
         {
             InputType = CreateInputType.Json,
             Delimiter = ";",
-            Json = inputJson,
-            SpecifyHeadersManually = true,
-            ManualHeaders = headers
+            Json = _jsonString,
+            SpecifyColumnsManually = true,
+            Headers = headers,
+            Columns = columns
         };
 
         var options = new Options()
@@ -202,14 +190,34 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
         var result = CSV.Create(input, options, default);
 
         var expectedCsv =
-            $"User ID;User Name;User Email;Account Plan;Account Balance{Environment.NewLine}" +
-            $"1;John Doe;john.doe@example.com;Pro;100.5{Environment.NewLine}" +
-            $"2;Jane Smith;jane.smith@example.com;Basic;50.75{Environment.NewLine}";
+            $"Login;Phone;Primary Email;Secondary Email;Role List 1;Role List 2;Activation Type{Environment.NewLine}" +
+            $"user1;123321111;user11@frends.com;user12@frends.com;role1_1;role2_1;password{Environment.NewLine}" +
+            $"user2;123322222;user21@frends.com;user22@frends.com;;role2_1;password{Environment.NewLine}";
+
 
         Assert.IsTrue(result.Success);
         Assert.AreEqual(expectedCsv, result.CSV);
     }
 
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void CreateExceptionTest_EmptyManualColumns()
+    {
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = _jsonString,
+            SpecifyColumnsManually = true,
+            Columns = null
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+
+        Assert.IsFalse(result.Success);
+    }
 
     [TestMethod]
     public void CreateTest_WriteFromXML()

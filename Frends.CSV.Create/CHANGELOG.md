@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.1] - 2024-08-12
+## [1.3.0] - 2024-08-12
 ### Added
 - Added option to specify headers manually when creating a CSV from Json.
 
