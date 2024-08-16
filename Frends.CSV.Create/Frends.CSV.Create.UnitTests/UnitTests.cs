@@ -148,6 +148,78 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
     }
 
     [TestMethod]
+    public void CreateTest_WriteFromJSONWithManualColumns()
+    {
+        var headers = new List<string>
+        {
+            "Login",
+            "Phone",
+            "Primary Email",
+            "Secondary Email",
+            "Role List 1",
+            "Role List 2",
+            "Activation Type"
+        };
+
+        var columns = new List<string>
+        {
+            "$.user_data.login",
+            "$.user_data.phone",
+            "$.user_data.contact.emails[0]",
+            "$.user_data.contact.emails[1]",
+            "$.roles[0].roles_list1[0]",
+            "$.roles[1].roles_list2[0]",
+            "$.activation_type"
+        };
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = _jsonString,
+            SpecifyColumnsManually = true,
+            Headers = headers,
+            Columns = columns
+        };
+
+        var options = new Options()
+        {
+            IncludeHeaderRow = true
+        };
+
+        var result = CSV.Create(input, options, default);
+
+        var expectedCsv =
+            $"Login;Phone;Primary Email;Secondary Email;Role List 1;Role List 2;Activation Type{Environment.NewLine}" +
+            $"user1;123321111;user11@frends.com;user12@frends.com;role1_1;role2_1;password{Environment.NewLine}" +
+            $"user2;123322222;user21@frends.com;user22@frends.com;;role2_1;password{Environment.NewLine}";
+
+
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(expectedCsv, result.CSV);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void CreateExceptionTest_EmptyManualColumns()
+    {
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = _jsonString,
+            SpecifyColumnsManually = true,
+            Columns = null
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+
+        Assert.IsFalse(result.Success);
+    }
+
+    [TestMethod]
     public void CreateTest_WriteFromXML()
     {
         var input = new Input()

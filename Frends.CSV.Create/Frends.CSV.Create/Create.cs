@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -50,7 +51,7 @@ public class CSV
                 csv = ListToCsvString(input.Data, input.Headers, config, options, cancellationToken);
                 break;
             case CreateInputType.Json:
-                csv = JsonToCsvString(input.Json, config, options, cancellationToken);
+                csv = JsonToCsvString(input, config, options, cancellationToken);
                 break;
             case CreateInputType.Xml:
                 csv = XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options, cancellationToken);
@@ -90,43 +91,79 @@ public class CSV
         return csvString.ToString();
     }
 
-    private static string JsonToCsvString(string json, CsvConfiguration config, Options options, CancellationToken cancellationToken)
+    private static string JsonToCsvString(Input input, CsvConfiguration config, Options options, CancellationToken cancellationToken)
     {
-        json = StringifyJsonNumbers(json);
-        JToken input = JsonConvert.DeserializeObject<JToken>(
+        var json = StringifyJsonNumbers(input.Json);
+        var jToken = JsonConvert.DeserializeObject<JToken>(
             json,
             new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, }
         );
-        input = input is JObject ? new JArray() { input } : input;
-        JArray inputArray = (JArray) input;
-        var limits = JsonArraysLimits(inputArray);
-        var data = FlattenJson(inputArray, limits);
+        var inputArray = jToken is JObject ? new JArray { jToken } : (JArray)jToken;
 
-        //CSV part
+        // CSV part
         using var csvString = new StringWriter();
         using var csv = new CsvWriter(csvString, config);
 
-        //Write the header row
-        if (config.HasHeaderRecord && data.Any())
+        // If columns are specified manually
+        if (input.SpecifyColumnsManually)
         {
-            foreach (var column in data.First().Keys)
+            // Validate if columns are null or empty
+            if (input.Columns == null || !input.Columns.Any())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(column);
+                throw new ArgumentException("Manual columns are specified but no columns are provided.");
             }
 
-            csv.NextRecord();
+            // Write the manually specified header row
+            if (config.HasHeaderRecord)
+            {
+                foreach (var header in input.Headers)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(header);
+                }
+                csv.NextRecord();
+            }
+
+            // Write the data rows using the specified JSON paths
+            foreach (var row in inputArray)
+            {
+                foreach (var column in input.Columns)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var value = row.SelectToken(column)?.ToString() ?? options.ReplaceNullsWith;
+                    csv.WriteField(value);
+                }
+                csv.NextRecord();
+            }
         }
-
-        foreach (var row in data)
+        else
         {
-            foreach (var cell in row)
+            var limits = JsonArraysLimits(inputArray);
+            var data = FlattenJson(inputArray, limits);
+
+            // Write the automatically generated header row
+            if (config.HasHeaderRecord && data.Any())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(cell.Value ?? options.ReplaceNullsWith);
+                foreach (var column in data.First().Keys)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(column);
+                }
+
+                csv.NextRecord();
             }
 
-            csv.NextRecord();
+            // Write the data rows
+            foreach (var row in data)
+            {
+                foreach (var cell in row)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csv.WriteField(cell.Value ?? options.ReplaceNullsWith);
+                }
+
+                csv.NextRecord();
+            }
         }
         return csvString.ToString();
     }

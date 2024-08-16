@@ -33,6 +33,21 @@ public class Input
     public string Json { get; set; }
 
     /// <summary>
+    /// If set true, allows the user to manually specify an array of columns which to generate.
+    /// </summary>
+    /// <example>false</example>
+    [UIHint(nameof(InputType), "", CreateInputType.Json)]
+    [DefaultValue("false")]
+    public bool SpecifyColumnsManually { get; set; }
+
+    /// <summary>
+    /// Custom columns for the data.
+    /// </summary>
+    /// <example>{ "Column1", "Column2", "Column3" }</example>
+    [UIHint(nameof(SpecifyColumnsManually), "", true)]
+    public List<string> Columns { get; set; }
+
+    /// <summary>
     /// Xml string to write to CSV. 
     /// </summary>
     /// <example>
