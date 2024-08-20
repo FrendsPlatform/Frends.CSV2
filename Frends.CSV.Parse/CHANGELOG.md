@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.2] - 2024-08-20
+### Added
+- Updated NewtonSoft.Json to the latest version 13.0.3.
+
 ## [1.2.1] - 2023-12-20
 ### Fixed
 - Empty and whitespace header values are now replaced if ReplaceHeaderWhitespaceWith is used.
