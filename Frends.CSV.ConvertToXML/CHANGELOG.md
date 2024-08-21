@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.1] - 2024-08-20
+## [1.1.0] - 2024-08-20
 ### Added
 - Updated NewtonSoft.Json to the latest version 13.0.3.
 
