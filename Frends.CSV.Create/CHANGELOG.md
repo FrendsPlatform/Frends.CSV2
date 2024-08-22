@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.0] - 2024-08-20
+### Added
+- Updated NewtonSoft.Json to the latest version 13.0.3.
+
 ## [1.3.0] - 2024-08-12
 ### Added
 - Added option to specify headers manually when creating a CSV from Json.
