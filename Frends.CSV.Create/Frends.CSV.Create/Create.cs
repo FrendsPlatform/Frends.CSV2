@@ -12,6 +12,7 @@ using CsvHelper.Configuration;
 using Frends.CSV.Create.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Frends.CSV.Create;
 
@@ -285,7 +286,7 @@ public class CSV
                                 foreach (JToken child in jToken.Parent!.Children())
                                 {
                                     properties.Add(
-                                        child.Path,
+                                        child.Path.Replace("['", "").Replace("']", ""),
                                         child.Type == JTokenType.Null ? null : child.ToString()
                                     );
                                 }
@@ -301,7 +302,7 @@ public class CSV
                         {
                             //adding non-array properties
                             properties.Add(
-                                jToken.Path,
+                                jToken.Path.Replace("['", "").Replace("']", ""),
                                 jToken.Type == JTokenType.Null ? null : jToken.ToString()
                             );
                         }

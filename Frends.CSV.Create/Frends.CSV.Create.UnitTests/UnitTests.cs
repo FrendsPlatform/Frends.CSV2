@@ -467,4 +467,22 @@ bar
             result.CSV
         );
     }
+
+    [TestMethod]
+    public void CreateTest_JSONWithSpacesInPropertyNames()
+    {
+        var json = @"{ ""property with spaces"": ""test test"" }";
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = json
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+        Assert.IsFalse(result.CSV.Contains("['property with spaces']"));
+    }
 }
