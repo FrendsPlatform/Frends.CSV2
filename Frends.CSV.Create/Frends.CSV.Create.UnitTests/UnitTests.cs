@@ -482,7 +482,38 @@ bar
 
         var options = new Options() { };
 
+        var expectedCsv = $"property with spaces{Environment.NewLine}test test{Environment.NewLine}";
+
         var result = CSV.Create(input, options, default);
-        Assert.IsFalse(result.CSV.Contains("['property with spaces']"));
+
+        Console.WriteLine(result.CSV);
+        Assert.AreEqual(expectedCsv, result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_JSONWithSpacesInPropertyNames2()
+    {
+        var json = @"{
+        ""property with spaces"": ""test test"",
+        ""normal_property"": ""value"",
+        ""another property with spaces"": 123
+    }";
+
+        var input = new Input()
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = json
+        };
+
+        var options = new Options() { };
+
+        var result = CSV.Create(input, options, default);
+
+        Assert.IsTrue(result.Success);
+
+        var expectedCsv = $"property with spaces;normal_property;another property with spaces{Environment.NewLine}test test;value;123{Environment.NewLine}";
+
+        Assert.AreEqual(expectedCsv, result.CSV);
     }
 }

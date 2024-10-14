@@ -12,7 +12,6 @@ using CsvHelper.Configuration;
 using Frends.CSV.Create.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Frends.CSV.Create;
 
