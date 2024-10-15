@@ -285,7 +285,7 @@ public class CSV
                                 foreach (JToken child in jToken.Parent!.Children())
                                 {
                                     properties.Add(
-                                        child.Path,
+                                        child.Path.Replace("['", "").Replace("']", ""),
                                         child.Type == JTokenType.Null ? null : child.ToString()
                                     );
                                 }
@@ -301,7 +301,7 @@ public class CSV
                         {
                             //adding non-array properties
                             properties.Add(
-                                jToken.Path,
+                                jToken.Path.Replace("['", "").Replace("']", ""),
                                 jToken.Type == JTokenType.Null ? null : jToken.ToString()
                             );
                         }

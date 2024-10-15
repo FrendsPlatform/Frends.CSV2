@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.0] - 2024-10-11
+### Fixed
+- Fixed issue with JSON properties having spaces in property names.
+
 ## [1.4.0] - 2024-08-20
 ### Added
 - Updated NewtonSoft.Json to the latest version 13.0.3.
