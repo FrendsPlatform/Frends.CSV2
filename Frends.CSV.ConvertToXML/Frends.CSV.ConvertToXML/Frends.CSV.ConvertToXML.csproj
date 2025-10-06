@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	<TargetFrameworks>net6.0</TargetFrameworks>
-	<Version>1.1.0</Version>
+	<Version>1.2.0</Version>
 	<Authors>Frends</Authors>
 	<Copyright>Frends</Copyright>
 	<Company>Frends</Company>
@@ -12,7 +12,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Frends Task to Convert CSV string content to a XML string.</Description>
 	<PackageProjectUrl>https://frends.com/</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/FrendsPlatform/Frends.CSV2</RepositoryUrl>
+	<RepositoryUrl>https://github.com/FrendsPlatform/Frends.CSV2/tree/main/Frends.CSV.ConvertToXML</RepositoryUrl>
   </PropertyGroup>
 	
   <ItemGroup>

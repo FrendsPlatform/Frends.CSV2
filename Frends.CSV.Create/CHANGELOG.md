@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.0] - 2025-10-06
+### Changed
+- Updated Repository link in the metadata.
+
 ## [1.5.0] - 2024-10-11
 ### Fixed
 - Fixed issue with JSON properties having spaces in property names.
