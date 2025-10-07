@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0] - 2025-10-06
+### Changed
+- Updated Repository link in the metadata.
+
 ## [1.1.0] - 2024-08-20
 ### Added
 - Updated NewtonSoft.Json to the latest version 13.0.3.
