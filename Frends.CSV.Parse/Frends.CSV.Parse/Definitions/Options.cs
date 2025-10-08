@@ -57,12 +57,14 @@ public class Options
     /// The flag for reader to treat missing fields as nulls instead of throwing a MissingFieldException.
     /// In case of providing column specifications manually the value of empty field defined as string will be empty instead of null
     /// </summary>
+    /// <example>false</example>
     [DefaultValue("false")]
     public bool TreatMissingFieldsAsNulls { get; set; } = false;
 
     /// <summary>
     /// A flag to let the reader know if quotes should be ignored.
     /// </summary>
+    /// <example>false</example>
     [DefaultValue("false")]
     public bool IgnoreQuotes { get; set; }
 }
