@@ -51,12 +51,12 @@ year;car;mark;price
         var input = new Input()
         {
             ColumnSpecifications = new[]
-                {
-                    new ColumnSpecification() {Name = "Year", Type = ColumnType.Int},
-                    new ColumnSpecification() {Name = "Car", Type = ColumnType.String},
-                    new ColumnSpecification() {Name = "Mark", Type = ColumnType.String},
-                    new ColumnSpecification() {Name = "Price", Type = ColumnType.Decimal}
-                },
+            {
+                new ColumnSpecification() { Name = "Year", Type = ColumnType.Int },
+                new ColumnSpecification() { Name = "Car", Type = ColumnType.String },
+                new ColumnSpecification() { Name = "Mark", Type = ColumnType.String },
+                new ColumnSpecification() { Name = "Price", Type = ColumnType.Decimal }
+            },
             Delimiter = ";",
             Csv = csv
         };
@@ -112,24 +112,24 @@ year;car;mark;price
     public void ParseTest_WillAllKindOfDataTypes()
     {
         var csv =
-@"THIS;is;header;row;with;some;random;stuff ;yes
+            @"THIS;is;header;row;with;some;random;stuff ;yes
 1997;""Fo;rd"";2,34;true;1;4294967296;f;2008-09-15;2008-05-01 7:34:42Z
 2000;Mercury;2,38;false;0;4294967296;g;2009-09-15T06:30:41.7752486;Thu, 01 May 2008 07:34:42 GMT";
 
         var input = new Input()
         {
             ColumnSpecifications = new[]
-                {
-                    new ColumnSpecification() {Name = "Int", Type = ColumnType.Int},
-                    new ColumnSpecification() {Name = "String", Type = ColumnType.String},
-                    new ColumnSpecification() {Name = "Decimal", Type = ColumnType.Decimal},
-                    new ColumnSpecification() {Name = "Bool", Type = ColumnType.Boolean},
-                    new ColumnSpecification() {Name = "Bool2", Type = ColumnType.Boolean},
-                    new ColumnSpecification() {Name = "Long", Type = ColumnType.Long},
-                    new ColumnSpecification() {Name = "Char", Type = ColumnType.Char},
-                    new ColumnSpecification() {Name = "DateTime", Type = ColumnType.DateTime},
-                    new ColumnSpecification() {Name = "DateTime2", Type = ColumnType.DateTime},
-                },
+            {
+                new ColumnSpecification() { Name = "Int", Type = ColumnType.Int },
+                new ColumnSpecification() { Name = "String", Type = ColumnType.String },
+                new ColumnSpecification() { Name = "Decimal", Type = ColumnType.Decimal },
+                new ColumnSpecification() { Name = "Bool", Type = ColumnType.Boolean },
+                new ColumnSpecification() { Name = "Bool2", Type = ColumnType.Boolean },
+                new ColumnSpecification() { Name = "Long", Type = ColumnType.Long },
+                new ColumnSpecification() { Name = "Char", Type = ColumnType.Char },
+                new ColumnSpecification() { Name = "DateTime", Type = ColumnType.DateTime },
+                new ColumnSpecification() { Name = "DateTime2", Type = ColumnType.DateTime },
+            },
             Delimiter = ";",
             Csv = csv
         };
@@ -253,7 +253,7 @@ year;car;mark;price
             ColumnSpecifications = new[]
             {
                 new ColumnSpecification() { Name = "String", Type = ColumnType.String },
-                new ColumnSpecification() { Name = "Decimal", Type = ColumnType.Decimal},
+                new ColumnSpecification() { Name = "Decimal", Type = ColumnType.Decimal },
                 new ColumnSpecification() { Name = "DateTime", Type = ColumnType.DateTime },
                 new ColumnSpecification() { Name = "Int", Type = ColumnType.Int },
                 new ColumnSpecification() { Name = "Long", Type = ColumnType.Long },
@@ -337,10 +337,10 @@ Foo; bar; 100; 2000-01-01";
         {
             ColumnSpecifications = new[]
             {
-                new ColumnSpecification() {Name = "First", Type = ColumnType.String},
-                new ColumnSpecification() {Name = "Second", Type = ColumnType.String},
-                new ColumnSpecification() {Name = "Number", Type = ColumnType.Int},
-                new ColumnSpecification() {Name = "Date", Type = ColumnType.DateTime}
+                new ColumnSpecification() { Name = "First", Type = ColumnType.String },
+                new ColumnSpecification() { Name = "Second", Type = ColumnType.String },
+                new ColumnSpecification() { Name = "Number", Type = ColumnType.Int },
+                new ColumnSpecification() { Name = "Date", Type = ColumnType.DateTime }
             },
             Delimiter = ";",
             Csv = csv
@@ -376,11 +376,52 @@ Foo; bar; 100; 2000-01-01";
         Assert.AreEqual("empty", result.Headers[2]);
     }
 
+    [TestMethod]
+    public void ParseTest_WithIgnoreQuotesSetToFalse()
+    {
+        const string csv = @"col1;col2
+""first;value"";secondValue
+thirdValue;fourthValue";
+
+        var input = new Input { Csv = csv };
+        var options = new Options { IgnoreQuotes = false };
+
+        var result = CSV.Parse(input, options, CancellationToken.None);
+        var resultJArray = (JArray)result.Jtoken;
+
+        Assert.AreEqual(2, result.Data.Count);
+        Assert.AreEqual(2, resultJArray.Count);
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<col1>first;value</col1>"));
+        Assert.AreEqual("fourthValue", resultJArray[1]["col2"]);
+    }
+
+    [TestMethod]
+    public void ParseTest_WithIgnoreQuotesSetToTrue()
+    {
+        const string csv = @"col1;col2;col3
+""first;value"";secondValue
+thirdValue;fourthValue;fifthValue";
+
+        var input = new Input { Csv = csv };
+        var options = new Options { IgnoreQuotes = true };
+
+        var result = CSV.Parse(input, options, CancellationToken.None);
+        var resultJArray = (JArray)result.Jtoken;
+
+        Assert.AreEqual(2, result.Data.Count);
+        Assert.AreEqual(2, resultJArray.Count);
+        Assert.IsNotNull(result.Xml);
+        Assert.IsTrue(ValidateXml(result.Xml));
+        Assert.IsTrue(result.Xml.Contains("<col1>\"first</col1>"));
+        Assert.AreEqual("fifthValue", resultJArray[1]["col3"]);
+    }
+
     private static bool ValidateXml(string xml)
     {
         var doc = new XmlDocument();
         doc.LoadXml(xml);
         return true;
     }
-
 }

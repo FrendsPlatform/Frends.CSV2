@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.0] - 2025-10-08
+### Added
+- Added option to ignore quotes
+
 ## [1.3.0] - 2024-08-20
 ### Added
 - Updated NewtonSoft.Json to the latest version 13.0.3.
