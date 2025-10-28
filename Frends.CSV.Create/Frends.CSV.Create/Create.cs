@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Threading;
-using System.Xml.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Frends.CSV.Create.Definitions;
 using Frends.CSV.Create.Parsers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Frends.CSV.Create;
 
 /// <summary>
 /// CSV Task.
 /// </summary>
-public class CSV
+public static class CSV
 {
     /// <summary>
     /// Create a CSV string from a List, JSON string or XML string.
@@ -42,22 +34,18 @@ public class CSV
             config.Mode = CsvMode.NoEscape;
             // if IgnoreQuotes is true, seems like ShouldQuote function has to return false in all cases
             // if IgnoreQuotes is false ShouldQuote can't have any implementation otherwise it will overwrite IgnoreQuotes statement ( might turn it on again)
-            config.ShouldQuote = (field) => (!options.NeverAddQuotesAroundValues);
+            config.ShouldQuote = _ => !options.NeverAddQuotesAroundValues;
         }
-        var csv = string.Empty;
 
-        switch (input.InputType)
+        var csv = input.InputType switch
         {
-            case CreateInputType.List:
-                csv = ListParser.ListToCsvString(input.Data, input.Headers, config, options, cancellationToken);
-                break;
-            case CreateInputType.Json:
-                csv = JsonParser.JsonToCsvString(input, config, options, cancellationToken);
-                break;
-            case CreateInputType.Xml:
-                csv = XmlParser.XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options, cancellationToken);
-                break;
-        }
+            CreateInputType.List => ListParser.ListToCsvString(input.Data, input.Headers, config, options,
+                cancellationToken),
+            CreateInputType.Json => JsonParserNew.JsonToCsvString(input, config, options, cancellationToken),
+            CreateInputType.Xml => XmlParser.XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options,
+                cancellationToken),
+            _ => string.Empty
+        };
         return new Result(true, csv);
     }
 
