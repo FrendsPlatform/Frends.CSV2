@@ -23,6 +23,8 @@ internal static class JsonParser
         {
             if (input.Columns is null || input.Columns.Count == 0)
                 throw new ArgumentException("Manual columns are specified but no columns are provided.");
+            if (config.HasHeaderRecord && input.Columns.Count != input.Headers.Count)
+                throw new ArgumentException("Headers count must match columns count in manual mode.");
 
             columns = input.Columns;
             headers = input.Headers;
@@ -200,7 +202,7 @@ internal static class JsonParser
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
                 var newPrefix = string.IsNullOrEmpty(prefix)
-                    ? reader.GetString()
+                    ? reader.GetString() ?? string.Empty
                     : $"{prefix}.{reader.GetString()}";
                 reader.Read();
                 switch (reader.TokenType)

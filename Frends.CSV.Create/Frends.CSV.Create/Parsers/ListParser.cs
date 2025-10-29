@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -17,7 +16,7 @@ internal static class ListParser
         using var csv = new CsvWriter(csvString, config);
 
         //Write the header row
-        if (config.HasHeaderRecord && inputData.Any())
+        if (config.HasHeaderRecord && inputHeaders is { Count: > 0 })
         {
             foreach (var column in inputHeaders)
             {
