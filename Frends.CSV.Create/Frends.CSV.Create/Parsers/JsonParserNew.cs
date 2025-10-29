@@ -29,7 +29,7 @@ internal static class JsonParserNew
         }
         else
         {
-            columns = CollectAllColumns(jsonBytes);
+            columns = CollectAllColumns(jsonBytes, cancellationToken);
             headers = columns;
         }
 
@@ -38,7 +38,6 @@ internal static class JsonParserNew
         using var csvString = new StringWriter();
         using var csv = new CsvWriter(csvString, config);
 
-        // Write headers
         if (config.HasHeaderRecord)
         {
             foreach (var header in headers)
@@ -49,14 +48,14 @@ internal static class JsonParserNew
             csv.NextRecord();
         }
 
-        // Write data rows
         WriteDataRows(jsonBytes, columns, csv, options.ReplaceNullsWith, cancellationToken);
         return csvString.ToString();
     }
 
-    private static List<string> CollectAllColumns(byte[] jsonBytes)
+    private static List<string> CollectAllColumns(byte[] jsonBytes, CancellationToken cancellationToken)
     {
         var allColumns = new List<string>();
+        var columns = new List<string>();
         var reader = new Utf8JsonReader(jsonBytes, new JsonReaderOptions { AllowTrailingCommas = true });
         if (!reader.Read() || (reader.TokenType != JsonTokenType.StartArray &&
                                reader.TokenType != JsonTokenType.StartObject))
@@ -66,19 +65,27 @@ internal static class JsonParserNew
 
         do
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (reader.TokenType != JsonTokenType.StartObject) continue;
-            var columns = ReadObjectColumns(ref reader, string.Empty);
-            foreach (var column in columns)
-            {
-                var prevColumn = DecrementArrayIndex(column);
-                if (allColumns.Contains(column) || allColumns.Contains($"{column}[0]")) continue;
-                var prevIndex = allColumns.IndexOf(prevColumn);
-                if (prevIndex == -1) allColumns.Add(column);
-                else allColumns.Insert(prevIndex + 1, column);
-            }
+            ReadObjectColumns(ref reader, ref columns, string.Empty);
+            InsertColumns(ref allColumns, ref columns);
         } while (reader.Read());
 
         return allColumns;
+    }
+
+    private static void InsertColumns(ref List<string> allColumns, ref List<string> columns)
+    {
+        foreach (var column in columns)
+        {
+            var prevColumn = DecrementArrayIndex(column);
+            if (allColumns.Contains(column) || allColumns.Contains($"{column}[0]")) continue;
+            var prevIndex = allColumns.IndexOf(prevColumn);
+            if (prevIndex == -1) allColumns.Add(column);
+            else allColumns.Insert(prevIndex + 1, column);
+        }
+
+        columns.Clear();
     }
 
     private static string DecrementArrayIndex(string input)
@@ -91,29 +98,26 @@ internal static class JsonParserNew
         });
     }
 
-    private static List<string> ReadObjectColumns(ref Utf8JsonReader reader, string prefix)
+    private static void ReadObjectColumns(ref Utf8JsonReader reader,
+        ref List<string> columns, string prefix)
     {
-        var columns = new List<string>();
         var depth = reader.CurrentDepth;
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndObject && reader.CurrentDepth == depth) break;
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
-                var propertyName = reader.GetString();
                 var newPrefix = string.IsNullOrEmpty(prefix)
-                    ? propertyName
-                    : $"{prefix}.{propertyName}";
+                    ? reader.GetString()
+                    : $"{prefix}.{reader.GetString()}";
                 reader.Read();
                 switch (reader.TokenType)
                 {
                     case JsonTokenType.StartObject:
-                        var nestedColumns = ReadObjectColumns(ref reader, newPrefix);
-                        columns.AddRange(nestedColumns);
+                        ReadObjectColumns(ref reader, ref columns, newPrefix);
                         break;
                     case JsonTokenType.StartArray:
-                        var arrayColumns = ReadArrayColumns(ref reader, newPrefix);
-                        columns.AddRange(arrayColumns);
+                        ReadArrayColumns(ref reader, ref columns, newPrefix);
                         break;
                     default:
                         columns.Add(newPrefix);
@@ -121,13 +125,11 @@ internal static class JsonParserNew
                 }
             }
         }
-
-        return columns;
     }
 
-    private static List<string> ReadArrayColumns(ref Utf8JsonReader reader, string prefix)
+    private static void ReadArrayColumns(ref Utf8JsonReader reader,
+        ref List<string> columns, string prefix)
     {
-        var columns = new List<string>();
         var depth = reader.CurrentDepth;
         var index = 0;
 
@@ -141,12 +143,10 @@ internal static class JsonParserNew
             switch (reader.TokenType)
             {
                 case JsonTokenType.StartObject:
-                    var nestedColumns = ReadObjectColumns(ref reader, arrayPrefix);
-                    columns.AddRange(nestedColumns);
+                    ReadObjectColumns(ref reader, ref columns, arrayPrefix);
                     break;
                 case JsonTokenType.StartArray:
-                    var arrayColumns = ReadArrayColumns(ref reader, arrayPrefix);
-                    columns.AddRange(arrayColumns);
+                    ReadArrayColumns(ref reader, ref columns, arrayPrefix);
                     break;
                 case JsonTokenType.Null:
                     break;
@@ -157,8 +157,6 @@ internal static class JsonParserNew
 
             index++;
         }
-
-        return columns;
     }
 
     private static void WriteDataRows(byte[] jsonBytes, List<string> columns,
@@ -172,25 +170,27 @@ internal static class JsonParserNew
             throw new InvalidOperationException("Expected Json array or Json object at root");
         }
 
+        var rowData = new Dictionary<string, string>();
+        var data = new Dictionary<string, string>();
         do
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (reader.TokenType != JsonTokenType.StartObject) continue;
-
-            var rowData = ReadObjectData(ref reader, string.Empty);
-            // Write row
+            ReadObjectData(ref reader, ref rowData, ref data, string.Empty);
             foreach (var column in columns)
             {
                 csv.WriteField(rowData.GetValueOrDefault(column, defaultValue));
             }
 
+            rowData.Clear();
+            data.Clear();
             csv.NextRecord();
         } while (reader.Read());
     }
 
-    private static Dictionary<string, string> ReadObjectData(ref Utf8JsonReader reader, string prefix)
+    private static void ReadObjectData(ref Utf8JsonReader reader, ref Dictionary<string, string> allData,
+        ref Dictionary<string, string> data, string prefix)
     {
-        var data = new Dictionary<string, string>();
         var depth = reader.CurrentDepth;
 
         while (reader.Read())
@@ -199,51 +199,40 @@ internal static class JsonParserNew
 
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
-                var propertyName = reader.GetString() ?? string.Empty;
                 var newPrefix = string.IsNullOrEmpty(prefix)
-                    ? propertyName
-                    : $"{prefix}.{propertyName}";
+                    ? reader.GetString()
+                    : $"{prefix}.{reader.GetString()}";
                 reader.Read();
                 switch (reader.TokenType)
                 {
                     case JsonTokenType.StartObject:
-                        var nestedData = ReadObjectData(ref reader, newPrefix);
-                        foreach (var kvp in nestedData)
-                        {
-                            data[kvp.Key] = kvp.Value;
-                        }
-
+                        ReadObjectData(ref reader, ref allData, ref data, newPrefix);
+                        InsertData(ref allData, ref data);
                         break;
                     case JsonTokenType.StartArray:
-                        var arrayData = ReadArrayData(ref reader, newPrefix);
-                        foreach (var kvp in arrayData)
-                        {
-                            data[kvp.Key] = kvp.Value;
-                        }
-
+                        ReadArrayData(ref reader, ref allData, ref data, newPrefix);
+                        InsertData(ref allData, ref data);
                         break;
                     case JsonTokenType.String:
-                        data[newPrefix] = reader.GetString() ?? string.Empty;
+                        allData[newPrefix] = reader.GetString() ?? string.Empty;
                         break;
                     case JsonTokenType.Number:
-                        data[newPrefix] = Encoding.UTF8.GetString(reader.ValueSpan);
+                        allData[newPrefix] = Encoding.UTF8.GetString(reader.ValueSpan);
                         break;
                     case JsonTokenType.True:
                     case JsonTokenType.False:
-                        data[newPrefix] = reader.GetBoolean().ToString().ToLower();
+                        allData[newPrefix] = reader.GetBoolean().ToString().ToLower();
                         break;
                     case JsonTokenType.Null:
                         break;
                 }
             }
         }
-
-        return data;
     }
 
-    private static Dictionary<string, string> ReadArrayData(ref Utf8JsonReader reader, string prefix)
+    private static void ReadArrayData(ref Utf8JsonReader reader, ref Dictionary<string, string> allData,
+        ref Dictionary<string, string> data, string prefix)
     {
-        var data = new Dictionary<string, string>();
         var depth = reader.CurrentDepth;
         var index = 0;
 
@@ -260,30 +249,23 @@ internal static class JsonParserNew
             switch (reader.TokenType)
             {
                 case JsonTokenType.StartObject:
-                    var nestedData = ReadObjectData(ref reader, arrayPrefix);
-                    foreach (var kvp in nestedData)
-                    {
-                        data[kvp.Key] = kvp.Value;
-                    }
+                    ReadObjectData(ref reader, ref allData, ref data, arrayPrefix);
+                    InsertData(ref allData, ref data);
 
                     break;
                 case JsonTokenType.StartArray:
-                    var arrayData = ReadArrayData(ref reader, arrayPrefix);
-                    foreach (var kvp in arrayData)
-                    {
-                        data[kvp.Key] = kvp.Value;
-                    }
-
+                    ReadArrayData(ref reader, ref allData, ref data, arrayPrefix);
+                    InsertData(ref allData, ref data);
                     break;
                 case JsonTokenType.String:
-                    data[arrayPrefix] = reader.GetString() ?? string.Empty;
+                    allData[arrayPrefix] = reader.GetString() ?? string.Empty;
                     break;
                 case JsonTokenType.Number:
-                    data[arrayPrefix] = Encoding.UTF8.GetString(reader.ValueSpan);
+                    allData[arrayPrefix] = Encoding.UTF8.GetString(reader.ValueSpan);
                     break;
                 case JsonTokenType.True:
                 case JsonTokenType.False:
-                    data[arrayPrefix] = reader.GetBoolean().ToString().ToLower();
+                    allData[arrayPrefix] = reader.GetBoolean().ToString().ToLower();
                     break;
                 case JsonTokenType.Null:
                     break;
@@ -291,7 +273,16 @@ internal static class JsonParserNew
 
             index++;
         }
+    }
 
-        return data;
+    private static void InsertData(ref Dictionary<string, string> allData,
+        ref Dictionary<string, string> data)
+    {
+        foreach (var kvp in data)
+        {
+            allData[kvp.Key] = kvp.Value;
+        }
+
+        data.Clear();
     }
 }
