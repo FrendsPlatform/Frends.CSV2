@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.0] - 2025-10-29
+### Fixed
+- Improve the memory efficiency of parsing Json.
+
 ## [1.6.0] - 2025-10-06
 ### Changed
 - Updated Repository link in the metadata.
