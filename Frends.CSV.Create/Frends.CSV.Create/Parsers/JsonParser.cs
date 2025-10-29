@@ -11,7 +11,7 @@ using Frends.CSV.Create.Definitions;
 
 namespace Frends.CSV.Create.Parsers;
 
-internal static class JsonParserNew
+internal static class JsonParser
 {
     internal static string JsonToCsvString(Input input, CsvConfiguration config, Options options,
         CancellationToken cancellationToken)

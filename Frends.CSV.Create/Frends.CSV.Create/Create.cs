@@ -41,7 +41,7 @@ public static class CSV
         {
             CreateInputType.List => ListParser.ListToCsvString(input.Data, input.Headers, config, options,
                 cancellationToken),
-            CreateInputType.Json => JsonParserNew.JsonToCsvString(input, config, options, cancellationToken),
+            CreateInputType.Json => JsonParser.JsonToCsvString(input, config, options, cancellationToken),
             CreateInputType.Xml => XmlParser.XmlToCsvString(input.Xml, input.XmlNodeElementName, config, options,
                 cancellationToken),
             _ => string.Empty
