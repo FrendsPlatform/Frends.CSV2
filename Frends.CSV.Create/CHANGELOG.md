@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.0] - 2025-11-12
+### Changed
+- Updated CsvHelper to the version 33.0.1.
+
 ## [1.6.0] - 2025-10-06
 ### Changed
 - Updated Repository link in the metadata.
