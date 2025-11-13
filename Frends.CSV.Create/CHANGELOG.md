@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.0] - 2025-11-12
+### Changed
+- Updated CsvHelper to version 33.0.1.
+
 ## [1.7.0] - 2025-10-29
 ### Fixed
 - Improve the memory efficiency of parsing Json.
