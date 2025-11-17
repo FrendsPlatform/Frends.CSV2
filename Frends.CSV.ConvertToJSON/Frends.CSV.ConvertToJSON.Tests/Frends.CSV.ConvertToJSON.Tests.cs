@@ -274,4 +274,52 @@ value1,value2";
         var ex = Assert.Throws<CsvHelper.MissingFieldException>(() => CSV.ConvertToJSON(input, options, default));
         Assert.IsTrue(ex.Message.StartsWith("Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
     }
+
+    [Test]
+    public void ConvertToJSONTest_WithIgnoreQuotesSetToFalse()
+    {
+        const string csv = @"col1;col2
+""first;value"";secondValue
+thirdValue;fourthValue";
+
+        var input = new Input
+        {
+            Csv = csv,
+            Delimiter = ";",
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
+        };
+
+        var options = new Options { IgnoreQuotes = false };
+
+        var result = CSV.ConvertToJSON(input, options, default);
+        var resultJArray = (JArray)result.Json;
+
+        Assert.AreEqual(2, resultJArray.Count);
+        Assert.AreEqual("first;value", resultJArray[0]["col1"].ToString());
+        Assert.AreEqual("fourthValue", resultJArray[1]["col2"].ToString());
+    }
+
+    [Test]
+    public void ConvertToJSONTest_WithIgnoreQuotesSetToTrue()
+    {
+        const string csv = @"col1;col2;col3
+""first;value"";secondValue
+thirdValue;fourthValue;fifthValue";
+
+        var input = new Input
+        {
+            Csv = csv,
+            Delimiter = ";",
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
+        };
+
+        var options = new Options { IgnoreQuotes = true };
+
+        var result = CSV.ConvertToJSON(input, options, default);
+        var resultJArray = (JArray)result.Json;
+
+        Assert.AreEqual(2, resultJArray.Count);
+        Assert.AreEqual("\"first", resultJArray[0]["col1"].ToString());
+        Assert.AreEqual("fifthValue", resultJArray[1]["col3"].ToString());
+    }
 }

@@ -38,6 +38,7 @@ public static class CSV
             Delimiter = input.Delimiter,
             TrimOptions = options.TrimOutput ? TrimOptions.None : TrimOptions.Trim,
             IgnoreBlankLines = options.SkipEmptyRows,
+            Mode = options.IgnoreQuotes ? CsvMode.NoEscape : CsvMode.RFC4180,
         };
 
         // Setting the MissingFieldFound -delegate property of configuration to null when
