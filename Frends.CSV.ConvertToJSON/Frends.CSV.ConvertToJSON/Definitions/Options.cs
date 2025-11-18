@@ -62,4 +62,11 @@ public class Options
     /// <example>true</example>
     [DefaultValue("true")]
     public bool TreatMissingFieldsAsNulls { get; set; } = false;
+
+    /// <summary>
+    /// A flag to let the reader know if quotes should be ignored.
+    /// </summary>
+    /// <example>false</example>
+    [DefaultValue("false")]
+    public bool IgnoreQuotes { get; set; }
 }
