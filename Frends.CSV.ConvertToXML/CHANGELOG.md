@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0] - 2025-05-12
+## [1.3.0] - 2025-12-05
 ### Changed
 - Update package CsvHelper to version 33.1.0.
 

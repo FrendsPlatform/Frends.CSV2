@@ -1,9 +1,9 @@
 # Changelog
 
-## [1.5.0] - 2025-05-12
+## [1.5.0] - 2025-12-05
 ### Changed
 - Update package CsvHelper to version 33.1.0.
-- 
+
 ## [1.4.0] - 2025-10-08
 ### Added
 - Added option to ignore quotes
