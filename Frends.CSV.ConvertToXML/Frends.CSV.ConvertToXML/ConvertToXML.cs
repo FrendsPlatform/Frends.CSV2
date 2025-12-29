@@ -37,7 +37,8 @@ public class CSV
             HasHeaderRecord = options.ContainsHeaderRow,
             Delimiter = input.Delimiter,
             TrimOptions = options.TrimOutput ? TrimOptions.None : TrimOptions.Trim,
-            IgnoreBlankLines = options.SkipEmptyRows
+            IgnoreBlankLines = options.SkipEmptyRows,
+            Mode = options.IgnoreQuotes ? CsvMode.NoEscape : CsvMode.RFC4180,
         };
 
         // Setting the MissingFieldFound -delegate property of configuration to null when
@@ -52,6 +53,7 @@ public class CSV
             sr.ReadLine();
 
         using var csvReader = new CsvReader(sr, configuration);
+
         if (options.ContainsHeaderRow)
         {
             csvReader.Read();
@@ -71,12 +73,14 @@ public class CSV
             while (csvReader.Read())
             {
                 var innerList = new List<object>();
+
                 for (var index = 0; index < input.ColumnSpecifications.Length; index++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var obj = csvReader.GetField(typeList[index], index);
                     innerList.Add(obj);
                 }
+
                 resultData.Add(innerList);
             }
         }
@@ -90,12 +94,14 @@ public class CSV
             while (csvReader.Read())
             {
                 var innerList = new List<object>();
+
                 for (var index = 0; index < csvReader.HeaderRecord.Length; index++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var obj = csvReader.GetField(index);
                     innerList.Add(obj);
                 }
+
                 resultData.Add(innerList);
             }
         }
@@ -106,15 +112,18 @@ public class CSV
 
             headers = csvReader.Parser.Record.Select((x, index) => index.ToString()).ToList();
             resultData.Add(new List<object>(csvReader.Parser.Record));
+
             while (csvReader.Read())
             {
                 var innerList = new List<object>();
+
                 for (var index = 0; index < headers.Count; index++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var obj = csvReader.GetField(index);
                     innerList.Add(obj);
                 }
+
                 resultData.Add(innerList);
             }
         }
@@ -143,6 +152,7 @@ public class CSV
     private static string WriteXmlString(IEnumerable<List<object>> data, Options options, CultureInfo culture, IReadOnlyList<string> headers, CancellationToken cancellationToken)
     {
         using var ms = new MemoryStream();
+
         using (var writer = new XmlTextWriter(ms, new UTF8Encoding(false)) { Formatting = Formatting.Indented })
         {
             writer.WriteStartDocument();
@@ -166,9 +176,11 @@ public class CSV
 
                 writer.WriteEndElement();
             }
+
             writer.WriteEndElement();
             writer.WriteEndDocument();
         }
+
         return Encoding.UTF8.GetString(ms.ToArray());
     }
 }
