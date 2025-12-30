@@ -78,4 +78,11 @@ public class Options
     [DisplayFormat(DataFormatString = "Text")]
     [DefaultValue("Row")]
     public string XmlRowElementName { get; set; }
+
+    /// <summary>
+    /// A flag to let the reader know if quotes should be ignored.
+    /// </summary>
+    /// <example>false</example>
+    [DefaultValue("false")]
+    public bool IgnoreQuotes { get; set; }
 }
