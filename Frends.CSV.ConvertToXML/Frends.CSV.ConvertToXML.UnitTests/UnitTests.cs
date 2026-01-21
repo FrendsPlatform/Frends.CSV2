@@ -23,7 +23,8 @@ public class UnitTests
         {
             ContainsHeaderRow = false,
             SkipRowsFromTop = 0,
-            SkipEmptyRows = false
+            SkipEmptyRows = false,
+            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite,
         };
 
         var result = CSV.ConvertToXML(input, options, default);
@@ -104,12 +105,13 @@ year;car;mark;price
         var options = new Options()
         {
             ContainsHeaderRow = false,
-            CultureInfo = "fi-FI"
+            CultureInfo = "fi-FI",
+            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite,
         };
 
         var result = CSV.ConvertToXML(input, options, default);
         Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(result.Xml.Contains("<0>2000</0>"));
+        Assert.IsTrue(result.Xml.Contains("<_0>2000</_0>"));
     }
 
     [Test]
@@ -194,11 +196,12 @@ year;car;mark;price
         {
             ContainsHeaderRow = false,
             CultureInfo = "fi-FI",
-            TreatMissingFieldsAsNulls = true
+            TreatMissingFieldsAsNulls = true,
+            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite,
         };
 
         var result = CSV.ConvertToXML(input, options, default);
-        Assert.IsTrue(condition: result.Xml.Contains("<2 />"));
+        Assert.IsTrue(condition: result.Xml.Contains("<_2 />"));
     }
 
     [Test]
@@ -302,5 +305,72 @@ thirdValue;fourthValue;fifthValue";
         var result = CSV.ConvertToXML(input, options, CancellationToken.None);
         Assert.IsTrue(result.Xml.Contains("<col1>\"first</col1>"));
         Assert.IsTrue(result.Xml.Contains("<col1>thirdValue</col1>"));
+    }
+
+    [Test]
+    public void ReplaceIllegalXmlCharacterHeaders()
+    {
+        var options = new Options { IllegalNodeNameAction = IllegalNodeNameAction.Overwrite };
+        const string csv = "first;second?;third@;fourth 4;<fifth>\n1.1;1.2;1.3;1.4;1.5\n2.1;2.2;2.3;2.4;2.5";
+        var input = new Input { Csv = csv };
+
+        var result = CSV.ConvertToXML(input, options, CancellationToken.None);
+
+        Assert.IsTrue(result.Xml.Contains("<second_3F_>"));
+        Assert.IsTrue(result.Xml.Contains("<third_40_>"));
+        Assert.IsTrue(result.Xml.Contains("<fourth_20_4>"));
+        Assert.IsTrue(result.Xml.Contains("<_3C_fifth_3E_>"));
+    }
+
+    [Test]
+    public void AddDefaultPrefixToIllegalNodeNames()
+    {
+        var options = new Options { IllegalNodeNameAction = IllegalNodeNameAction.Overwrite };
+        const string csv = "1first;2second\n1.1;1.2\n2.1;2.2";
+        var input = new Input { Csv = csv };
+
+        var result = CSV.ConvertToXML(input, options, CancellationToken.None);
+
+        Assert.IsTrue(result.Xml.Contains("<_1first>"));
+        Assert.IsTrue(result.Xml.Contains("<_2second>"));
+    }
+
+    [Test]
+    public void AddCustomPrefixToIllegalNodeNames()
+    {
+        var options = new Options
+        {
+            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite,
+            IllegalNodeNamePrefix = "Prefix",
+        };
+        const string csv = "1first;2second\n1.1;1.2\n2.1;2.2";
+        var input = new Input { Csv = csv };
+
+        var result = CSV.ConvertToXML(input, options, CancellationToken.None);
+
+        Assert.IsTrue(result.Xml.Contains("<Prefix1first>"));
+        Assert.IsTrue(result.Xml.Contains("<Prefix2second>"));
+    }
+
+    [Test]
+    public void ThrowErrorWhenNodeNameStartsIllegally()
+    {
+        const string csv = "1first;2second\n1.1;1.2\n2.1;2.2";
+        var input = new Input { Csv = csv };
+
+        var ex = Assert.Throws<Exception>(() => CSV.ConvertToXML(input, new Options(), CancellationToken.None));
+
+        Assert.IsTrue(ex.Message.StartsWith("Illegal first character"));
+    }
+
+    [Test]
+    public void ThrowErrorWhenNodeNameIsIllegal()
+    {
+        const string csv = "first;second?\n1.1;1.2\n2.1;2.2";
+        var input = new Input { Csv = csv };
+
+        var ex = Assert.Throws<Exception>(() => CSV.ConvertToXML(input, new Options(), CancellationToken.None));
+
+        Assert.IsTrue(ex.Message.StartsWith("Illegal character"));
     }
 }

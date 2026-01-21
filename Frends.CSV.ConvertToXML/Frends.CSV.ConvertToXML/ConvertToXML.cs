@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using Frends.CSV.ConvertToXML.Helpers;
 
 namespace Frends.CSV.ConvertToXML;
 
@@ -171,7 +172,8 @@ public class CSV
                 for (var i = 0; i < headers.Count; i++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    writer.WriteElementString(headers[i], Convert.ToString(row[i], culture));
+                    var nodeName = XmlHandler.FixedXmlNodeName(headers[i], options.IllegalNodeNamePrefix, options.IllegalNodeNameAction);
+                    writer.WriteElementString(nodeName, Convert.ToString(row[i], culture));
                 }
 
                 writer.WriteEndElement();
