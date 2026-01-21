@@ -96,7 +96,7 @@ public class Options
     /// <summary>
     /// A prefix that will be added to illegal node names. If it's empty, the prefix will be "_"
     /// </summary>
-    /// <example>ThrowError</example>
+    /// <example>Pref</example>
     [DefaultValue("")]
     [UIHint(nameof(IllegalNodeNameAction), "", IllegalNodeNameAction.Overwrite)]
     public string IllegalNodeNamePrefix { get; set; } = string.Empty;
