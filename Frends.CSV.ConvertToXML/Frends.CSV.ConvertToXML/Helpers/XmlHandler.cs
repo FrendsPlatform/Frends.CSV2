@@ -11,7 +11,7 @@ internal static class XmlHandler
         IllegalNodeNameAction illegalNodeNameAction)
     {
         if (nodeNamePrefix == string.Empty) nodeNamePrefix = "_";
-        
+
         // illegal characters
         for (var i = 0; i < nodeName.Length; i++)
         {
@@ -24,9 +24,9 @@ internal static class XmlHandler
 
             if (illegalNodeNameAction == IllegalNodeNameAction.ThrowError)
                 throw new Exception($"Illegal character '{c}' in nodeName \"{nodeName}\" at position {i}.");
-            nodeName = $"{nodeName[..i]}_{(int)c:X2}_{nodeName[(i + 1)..]}" ;
+            nodeName = $"{nodeName[..i]}_{(int)c:X2}_{nodeName[(i + 1)..]}";
         }
-        
+
         // first character
         var first = nodeName[0];
 
