@@ -31,25 +31,11 @@ public class Result
     /// <example>fi-FI</example>
     public string ConfigurationCultureInfo { get; private set; }
 
-    /// <summary>
-    /// Result as JToken.
-    /// </summary>
-    /// <example>{[ {"value": "1", "foos": "foo", "bars": "bar"} ]}</example>
-    public dynamic Jtoken { get; private set; }
-
-    /// <summary>
-    /// Result as XML string.
-    /// </summary>
-    /// <example>"&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;\r\n&lt;Root&gt;\r\n  &lt;Row&gt;\r\n    &lt;value&gt;1&lt;/value&gt;\r\n    &lt;foos&gt;foo&lt;/foos&gt;\r\n    &lt;bars&gt;bar&lt;/bars&gt;\r\n&lt;/Row&gt;\r\n&lt;/Root&gt;"</example>
-    public string Xml { get; private set; }
-
-    internal Result(bool success, List<List<object>> data, List<string> headers, string configurationCultureInfo, object jtoken, string xml)
+    internal Result(bool success, List<List<object>> data, List<string> headers, string configurationCultureInfo)
     {
         Success = success;
         Data = data;
         Headers = headers;
         ConfigurationCultureInfo = configurationCultureInfo;
-        Jtoken = jtoken;
-        Xml = xml;
     }
 }

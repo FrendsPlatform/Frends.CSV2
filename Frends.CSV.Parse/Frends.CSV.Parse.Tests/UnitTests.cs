@@ -1,6 +1,5 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using System.Xml;
 
 namespace Frends.CSV.Parse.Tests;
@@ -32,14 +31,8 @@ year;car;mark;price
         };
 
         var result = CSV.Parse(input, options, default);
-        dynamic resultJArray = result.Jtoken;
 
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<year>2000</year>"));
-        Assert.AreEqual("2,34", resultJArray[0].price.ToString());
     }
 
     [TestMethod]
@@ -68,14 +61,8 @@ year;car;mark;price
         };
 
         var result = CSV.Parse(input, options, default);
-        var resultJArray = (JArray)result.Jtoken;
 
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<Year>2000</Year>"));
-        Assert.AreEqual(2.34, resultJArray[0]["Price"].Value<double>());
     }
 
     [TestMethod]
@@ -98,14 +85,8 @@ year;car;mark;price
         };
 
         var result = CSV.Parse(input, options, default);
-        var resultJArray = (JArray)result.Jtoken;
 
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<Column1>2000</Column1>"));
-        Assert.AreEqual("2,34", resultJArray[0]["Column4"].Value<string>());
     }
 
     [TestMethod]
@@ -141,15 +122,10 @@ year;car;mark;price
         };
 
         var result = CSV.Parse(input, options, default);
-        var resultJArray = (JArray)result.Jtoken;
         var resultData = result.Data;
         var itemArray = resultData[0];
 
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.AreEqual(4294967296, resultJArray[0]["Long"].Value<long>());
         Assert.AreEqual(typeof(int), itemArray[0].GetType());
         Assert.AreEqual(1997, itemArray[0]);
         Assert.AreEqual(typeof(string), itemArray[1].GetType());
@@ -193,12 +169,6 @@ year;car;mark;price
 
         var result = CSV.Parse(input, options, default);
 
-        var resultJson = (JArray)result.Jtoken;
-        Assert.IsNull(resultJson[2].Value<string>("header3"));
-
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<header3 />"));
-
         var resultData = result.Data;
         var nullItem = resultData[2][2];
 
@@ -228,12 +198,6 @@ year;car;mark;price
         };
 
         var result = CSV.Parse(input, options, default);
-
-        var resultJson = (JArray)result.Jtoken;
-        Assert.IsNull(resultJson[2].Value<string>("Column3"));
-
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<Column3 />"));
 
         var resultData = result.Data;
         var nullItem = resultData[2][2];
@@ -387,14 +351,7 @@ thirdValue;fourthValue";
         var options = new Options { IgnoreQuotes = false };
 
         var result = CSV.Parse(input, options, CancellationToken.None);
-        var resultJArray = (JArray)result.Jtoken;
-
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<col1>first;value</col1>"));
-        Assert.AreEqual("fourthValue", resultJArray[1]["col2"]);
     }
 
     [TestMethod]
@@ -408,20 +365,7 @@ thirdValue;fourthValue;fifthValue";
         var options = new Options { IgnoreQuotes = true };
 
         var result = CSV.Parse(input, options, CancellationToken.None);
-        var resultJArray = (JArray)result.Jtoken;
 
         Assert.AreEqual(2, result.Data.Count);
-        Assert.AreEqual(2, resultJArray.Count);
-        Assert.IsNotNull(result.Xml);
-        Assert.IsTrue(ValidateXml(result.Xml));
-        Assert.IsTrue(result.Xml.Contains("<col1>\"first</col1>"));
-        Assert.AreEqual("fifthValue", resultJArray[1]["col3"]);
-    }
-
-    private static bool ValidateXml(string xml)
-    {
-        var doc = new XmlDocument();
-        doc.LoadXml(xml);
-        return true;
     }
 }
