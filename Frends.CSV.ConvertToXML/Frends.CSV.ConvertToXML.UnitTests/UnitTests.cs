@@ -186,12 +186,9 @@ year;car;mark;price
             Csv = csv
         };
 
-        var options = new Options
-        {
-            ContainsHeaderRow = false, CultureInfo = "fi-FI", TreatMissingFieldsAsNulls = true
-        };
+        var opt = new Options { ContainsHeaderRow = false, CultureInfo = "fi-FI", TreatMissingFieldsAsNulls = true };
 
-        var result = CSV.ConvertToXML(input, options, CancellationToken.None);
+        var result = CSV.ConvertToXML(input, opt, CancellationToken.None);
         Assert.IsTrue(result.Xml.Contains("<Decimal />"));
         Assert.IsTrue(result.Xml.Contains("<DateTime />"));
         Assert.IsTrue(result.Xml.Contains("<Int />"));
@@ -217,8 +214,7 @@ year;car;mark;price
         };
 
         var ex = Assert.Throws<MissingFieldException>(() => CSV.ConvertToXML(input, options, CancellationToken.None));
-        Assert.IsTrue(ex.Message.StartsWith(
-            "Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
+        Assert.IsTrue(ex.Message.StartsWith("Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
     }
 
     [Test]
@@ -227,10 +223,7 @@ year;car;mark;price
         const string csv = @"col1;col2
 ""first;value"";secondValue
 thirdValue;fourthValue";
-        var input = new Input
-        {
-            Csv = csv, Delimiter = ";", ColumnSpecifications = Array.Empty<ColumnSpecification>(),
-        };
+        var input = new Input { Csv = csv, Delimiter = ";", ColumnSpecifications = Array.Empty<ColumnSpecification>() };
         var options = new Options { IgnoreQuotes = false };
         var result = CSV.ConvertToXML(input, options, CancellationToken.None);
         Assert.IsTrue(result.Xml.Contains("<col1>first;value</col1>"));
@@ -243,10 +236,7 @@ thirdValue;fourthValue";
         const string csv = @"col1;col2;col3
 ""first;value"";secondValue
 thirdValue;fourthValue;fifthValue";
-        var input = new Input
-        {
-            Csv = csv, Delimiter = ";", ColumnSpecifications = Array.Empty<ColumnSpecification>(),
-        };
+        var input = new Input { Csv = csv, Delimiter = ";", ColumnSpecifications = Array.Empty<ColumnSpecification>() };
         var options = new Options { IgnoreQuotes = true };
         var result = CSV.ConvertToXML(input, options, CancellationToken.None);
         Assert.IsTrue(result.Xml.Contains("<col1>\"first</col1>"));
@@ -286,7 +276,8 @@ thirdValue;fourthValue;fifthValue";
     {
         var options = new Options
         {
-            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite, IllegalNodeNamePrefix = "Prefix",
+            IllegalNodeNameAction = IllegalNodeNameAction.Overwrite,
+            IllegalNodeNamePrefix = "Prefix",
         };
         const string csv = "1first;2second\n1.1;1.2\n2.1;2.2";
         var input = new Input { Csv = csv };
