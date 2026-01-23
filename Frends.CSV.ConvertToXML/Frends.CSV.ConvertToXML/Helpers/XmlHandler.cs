@@ -28,6 +28,7 @@ internal static class XmlHandler
         }
 
         // first character
+        if (string.IsNullOrEmpty(nodeName)) nodeName = nodeNamePrefix;
         var first = nodeName[0];
 
         if (!(char.IsLetter(first) || first == '_'))
