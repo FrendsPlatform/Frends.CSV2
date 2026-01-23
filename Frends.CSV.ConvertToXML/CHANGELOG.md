@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.0] - 2026-01-21
+
+### Added
+
+- Add options to fix illegal node names. The default behavior is throwing an error if the node name is invalid.
+
 ## [1.4.0] - 2025-12-29
 
 ### Added

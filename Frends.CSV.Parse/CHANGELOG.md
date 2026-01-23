@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.0] - 2026-01-21
+### Changed
+- Removed XML and JSON outputs; the task now returns only an object as intended; use ConvertToJSON and ConvertToXML tasks if needed.
+
 ## [1.5.0] - 2025-12-05
 ### Changed
 - Update package CsvHelper to version 33.1.0.

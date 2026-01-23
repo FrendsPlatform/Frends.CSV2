@@ -43,7 +43,7 @@ public class Options
     /// <example>" "</example>
     [DisplayFormat(DataFormatString = "Text")]
     [DefaultValue(" ")]
-    public string ReplaceHeaderWhitespaceWith { get; set; }
+    public string ReplaceHeaderWhitespaceWith { get; set; } = " ";
 
     /// <summary>
     /// The culture info to read/write the entries with, e.g. for decimal separators.
@@ -85,4 +85,19 @@ public class Options
     /// <example>false</example>
     [DefaultValue("false")]
     public bool IgnoreQuotes { get; set; }
+
+    /// <summary>
+    /// If a converted node name is illegal, a selected action will be taken.
+    /// </summary>
+    /// <example>ThrowError</example>
+    [DefaultValue(IllegalNodeNameAction.ThrowError)]
+    public IllegalNodeNameAction IllegalNodeNameAction { get; set; } = IllegalNodeNameAction.ThrowError;
+
+    /// <summary>
+    /// A prefix that will be added to illegal node names. If it's empty, the prefix will be "_"
+    /// </summary>
+    /// <example>Pref</example>
+    [DefaultValue("")]
+    [UIHint(nameof(IllegalNodeNameAction), "", IllegalNodeNameAction.Overwrite)]
+    public string IllegalNodeNamePrefix { get; set; } = string.Empty;
 }
