@@ -557,4 +557,80 @@ bar
 
         Assert.AreEqual(expectedCsv, result.CSV);
     }
+
+    [TestMethod]
+    public void CreateTest_WriteFromEmptyJSON()
+    {
+        const string correctResult = "";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = string.Empty
+        };
+
+        var options = new Options();
+
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(correctResult, result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromWhitespaceJSON()
+    {
+        const string correctResult = "";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = "   \t\n  "
+        };
+
+        var options = new Options();
+
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(correctResult, result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromEmptyJSONArray()
+    {
+        const string correctResult = "";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = "[]"
+        };
+
+        var options = new Options();
+
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(correctResult, result.CSV);
+    }
+
+    [TestMethod]
+    public void CreateTest_WriteFromEmptyJSONObject()
+    {
+        const string correctResult = "";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = "{}"
+        };
+
+        var options = new Options();
+
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(correctResult, result.CSV);
+    }
 }

@@ -16,6 +16,12 @@ internal static class JsonParser
     internal static string JsonToCsvString(Input input, CsvConfiguration config, Options options,
         CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(input.Json))
+        {
+            using var emptyStringWriter = new StringWriter();
+            return emptyStringWriter.ToString();
+        }
+
         var jsonBytes = Encoding.UTF8.GetBytes(input.Json);
         List<string> columns, headers;
 
@@ -35,7 +41,11 @@ internal static class JsonParser
             headers = columns;
         }
 
-        if (columns is null || columns.Count == 0) throw new ArgumentException("No columns found in JSON.");
+        if (columns is null || columns.Count == 0)
+        {
+            using var emptyStringWriter = new StringWriter();
+            return emptyStringWriter.ToString();
+        }
 
         using var csvString = new StringWriter();
         using var csv = new CsvWriter(csvString, config);
@@ -59,8 +69,13 @@ internal static class JsonParser
         var allColumns = new List<string>();
         var columns = new List<string>();
         var reader = new Utf8JsonReader(jsonBytes, new JsonReaderOptions { AllowTrailingCommas = true });
-        if (!reader.Read() || (reader.TokenType != JsonTokenType.StartArray &&
-                               reader.TokenType != JsonTokenType.StartObject))
+
+        if (!reader.Read())
+        {
+            return allColumns;
+        }
+
+        if (reader.TokenType != JsonTokenType.StartArray && reader.TokenType != JsonTokenType.StartObject)
         {
             throw new InvalidOperationException("Expected Json array or Json object at root");
         }
@@ -166,8 +181,12 @@ internal static class JsonParser
     {
         var reader = new Utf8JsonReader(jsonBytes, new JsonReaderOptions { AllowTrailingCommas = true });
 
-        if (!reader.Read() || (reader.TokenType != JsonTokenType.StartArray &&
-                               reader.TokenType != JsonTokenType.StartObject))
+        if (!reader.Read())
+        {
+            return;
+        }
+
+        if (reader.TokenType != JsonTokenType.StartArray && reader.TokenType != JsonTokenType.StartObject)
         {
             throw new InvalidOperationException("Expected Json array or Json object at root");
         }
