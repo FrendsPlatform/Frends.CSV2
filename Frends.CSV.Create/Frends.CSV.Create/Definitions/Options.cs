@@ -38,5 +38,10 @@ public class Options
     [DisplayFormat(DataFormatString = "Text")]
     public string ReplaceNullsWith { get; set; }
 
-
+    /// <summary>
+    /// Specifies the string representation format for boolean values in the CSV output.
+    /// </summary>
+    /// <example>BooleanFormat.Lowercase</example>
+    [DefaultValue(BooleanFormat.Lowercase)]
+    public BooleanFormat BooleanFormat { get; set; } = BooleanFormat.Lowercase;
 }

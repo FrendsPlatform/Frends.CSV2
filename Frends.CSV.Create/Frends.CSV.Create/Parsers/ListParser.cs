@@ -32,7 +32,13 @@ internal static class ListParser
             foreach (var cell in row)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(cell ?? options.ReplaceNullsWith);
+                var value = cell switch
+                {
+                    bool boolValue => Helpers.FormatBoolean(boolValue, options.BooleanFormat),
+                    null => options.ReplaceNullsWith,
+                    _ => cell
+                };
+                csv.WriteField(value);
             }
 
             csv.NextRecord();

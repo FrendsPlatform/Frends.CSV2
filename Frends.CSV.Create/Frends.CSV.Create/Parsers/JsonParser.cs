@@ -60,7 +60,7 @@ internal static class JsonParser
             csv.NextRecord();
         }
 
-        WriteDataRows(jsonBytes, columns, csv, options.ReplaceNullsWith, cancellationToken);
+        WriteDataRows(jsonBytes, columns, csv, options, cancellationToken);
         return csvString.ToString();
     }
 
@@ -177,7 +177,7 @@ internal static class JsonParser
     }
 
     private static void WriteDataRows(byte[] jsonBytes, List<string> columns,
-        CsvWriter csv, string defaultValue, CancellationToken cancellationToken)
+        CsvWriter csv, Options options, CancellationToken cancellationToken)
     {
         var reader = new Utf8JsonReader(jsonBytes, new JsonReaderOptions { AllowTrailingCommas = true });
 
@@ -197,10 +197,10 @@ internal static class JsonParser
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (reader.TokenType != JsonTokenType.StartObject) continue;
-            ReadObjectData(ref reader, ref rowData, ref data, string.Empty);
+            ReadObjectData(ref reader, ref rowData, ref data, string.Empty, options.BooleanFormat);
             foreach (var column in columns)
             {
-                csv.WriteField(rowData.GetValueOrDefault(column, defaultValue));
+                csv.WriteField(rowData.GetValueOrDefault(column, options.ReplaceNullsWith));
             }
 
             rowData.Clear();
@@ -210,7 +210,7 @@ internal static class JsonParser
     }
 
     private static void ReadObjectData(ref Utf8JsonReader reader, ref Dictionary<string, string> allData,
-        ref Dictionary<string, string> data, string prefix)
+        ref Dictionary<string, string> data, string prefix, BooleanFormat booleanFormat)
     {
         var depth = reader.CurrentDepth;
 
@@ -227,11 +227,11 @@ internal static class JsonParser
                 switch (reader.TokenType)
                 {
                     case JsonTokenType.StartObject:
-                        ReadObjectData(ref reader, ref allData, ref data, newPrefix);
+                        ReadObjectData(ref reader, ref allData, ref data, newPrefix, booleanFormat);
                         InsertData(ref allData, ref data);
                         break;
                     case JsonTokenType.StartArray:
-                        ReadArrayData(ref reader, ref allData, ref data, newPrefix);
+                        ReadArrayData(ref reader, ref allData, ref data, newPrefix, booleanFormat);
                         InsertData(ref allData, ref data);
                         break;
                     case JsonTokenType.String:
@@ -242,7 +242,7 @@ internal static class JsonParser
                         break;
                     case JsonTokenType.True:
                     case JsonTokenType.False:
-                        allData[newPrefix] = reader.GetBoolean().ToString().ToLower();
+                        allData[newPrefix] = Helpers.FormatBoolean(reader.GetBoolean(), booleanFormat);
                         break;
                     case JsonTokenType.Null:
                         break;
@@ -252,7 +252,7 @@ internal static class JsonParser
     }
 
     private static void ReadArrayData(ref Utf8JsonReader reader, ref Dictionary<string, string> allData,
-        ref Dictionary<string, string> data, string prefix)
+        ref Dictionary<string, string> data, string prefix, BooleanFormat booleanFormat)
     {
         var depth = reader.CurrentDepth;
         var index = 0;
@@ -270,12 +270,12 @@ internal static class JsonParser
             switch (reader.TokenType)
             {
                 case JsonTokenType.StartObject:
-                    ReadObjectData(ref reader, ref allData, ref data, arrayPrefix);
+                    ReadObjectData(ref reader, ref allData, ref data, arrayPrefix, booleanFormat);
                     InsertData(ref allData, ref data);
 
                     break;
                 case JsonTokenType.StartArray:
-                    ReadArrayData(ref reader, ref allData, ref data, arrayPrefix);
+                    ReadArrayData(ref reader, ref allData, ref data, arrayPrefix, booleanFormat);
                     InsertData(ref allData, ref data);
                     break;
                 case JsonTokenType.String:
@@ -286,7 +286,7 @@ internal static class JsonParser
                     break;
                 case JsonTokenType.True:
                 case JsonTokenType.False:
-                    allData[arrayPrefix] = reader.GetBoolean().ToString().ToLower();
+                    allData[arrayPrefix] = Helpers.FormatBoolean(reader.GetBoolean(), booleanFormat);
                     break;
                 case JsonTokenType.Null:
                     break;

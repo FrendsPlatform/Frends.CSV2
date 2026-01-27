@@ -94,5 +94,4 @@ public class Input
     [UIHint(nameof(InputType), "", CreateInputType.List)]
     [DisplayFormat(DataFormatString = "Expression")]
     public List<List<object>> Data { get; set; }
-
 }

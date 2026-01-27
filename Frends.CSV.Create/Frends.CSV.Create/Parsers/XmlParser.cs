@@ -40,10 +40,20 @@ internal static class XmlParser
 
         foreach (var column in nodes)
         {
-            foreach (var cell in column.Elements().Select(n => n.Value).ToList())
+            foreach (var element in column.Elements())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                csv.WriteField(cell ?? options.ReplaceNullsWith);
+
+                var cell = element.Value;
+                var value = cell switch
+                {
+                    "true" or "True" or "TRUE" => Helpers.FormatBoolean(true, options.BooleanFormat),
+                    "false" or "False" or "FALSE" => Helpers.FormatBoolean(false, options.BooleanFormat),
+                    null => options.ReplaceNullsWith,
+                    _ => cell
+                };
+
+                csv.WriteField(value);
             }
 
             csv.NextRecord();
