@@ -48,7 +48,4 @@ public static class CSV
         };
         return new Result(true, csv);
     }
-
-
-
 }

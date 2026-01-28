@@ -633,4 +633,112 @@ bar
         Assert.IsTrue(result.Success);
         Assert.AreEqual(correctResult, result.CSV);
     }
+
+    [TestMethod]
+    [DataRow(BooleanFormat.Lowercase, "true", "false")]
+    [DataRow(BooleanFormat.PascalCase, "True", "False")]
+    [DataRow(BooleanFormat.Numeric, "1", "0")]
+    public void CreateTest_BooleanFormat_FromJSON(BooleanFormat format, string trueValue, string falseValue)
+    {
+        var correctResult =
+            $"name;active;archived{Environment.NewLine}" +
+            $"Alice;{trueValue};{falseValue}{Environment.NewLine}" +
+            $"Bob;{falseValue};{trueValue}{Environment.NewLine}";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = @"
+            [
+                {
+                    ""name"": ""Alice"",
+                    ""active"": true,
+                    ""archived"": false
+                },
+                {
+                    ""name"": ""Bob"",
+                    ""active"": false,
+                    ""archived"": true
+                }
+            ]",
+        };
+        var options = new Options
+        {
+            BooleanFormat = format
+        };
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(correctResult, result.CSV);
+    }
+
+    [TestMethod]
+    [DataRow(BooleanFormat.Lowercase, "true", "false")]
+    [DataRow(BooleanFormat.PascalCase, "True", "False")]
+    [DataRow(BooleanFormat.Numeric, "1", "0")]
+    public void CreateTest_BooleanFormat_FromList(BooleanFormat format, string trueValue, string falseValue)
+    {
+        var headers = new List<string> { "Name", "Active", "Premium" };
+        var data = new List<List<object>>
+    {
+        new() { "Alice", true, false },
+        new() { "Bob", false, true }
+    };
+        var input = new Input
+        {
+            InputType = CreateInputType.List,
+            Delimiter = ";",
+            Data = data,
+            Headers = headers
+        };
+        var options = new Options
+        {
+            BooleanFormat = format
+        };
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(
+            $"Name;Active;Premium{Environment.NewLine}Alice;{trueValue};{falseValue}{Environment.NewLine}Bob;{falseValue};{trueValue}{Environment.NewLine}",
+            result.CSV);
+    }
+
+    [TestMethod]
+    [DataRow(BooleanFormat.Lowercase, "true", "false")]
+    [DataRow(BooleanFormat.PascalCase, "True", "False")]
+    [DataRow(BooleanFormat.Numeric, "1", "0")]
+    public void CreateTest_BooleanFormat_FromXML(BooleanFormat format, string trueValue, string falseValue)
+    {
+        const string xmlWithBooleans = @"<?xml version=""1.0""?>
+        <catalog>
+           <item>
+               <name>Product A</name>
+               <active>true</active>
+               <featured>false</featured>
+           </item>
+           <item>
+               <name>Product B</name>
+               <active>True</active>
+               <featured>False</featured>
+           </item>
+        </catalog>";
+
+        var input = new Input
+        {
+            InputType = CreateInputType.Xml,
+            Delimiter = ";",
+            Xml = xmlWithBooleans,
+            XmlNodeElementName = "item"
+        };
+        var options = new Options
+        {
+            BooleanFormat = format
+        };
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(
+            $"name;active;featured{Environment.NewLine}Product A;{trueValue};{falseValue}{Environment.NewLine}Product B;{trueValue};{falseValue}{Environment.NewLine}",
+            result.CSV);
+    }
+
+
 }

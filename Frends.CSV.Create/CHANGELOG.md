@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.11.0] - 2026-01-27
+### Added
+- Added BooleanFormat option to customize boolean output format in CSV (lowercase, PascalCase, or numeric).
+
 ## [1.10.0] - 2026-01-23
 ### Fixed
 - Empty JSON input now returns empty string instead of throwing exception
