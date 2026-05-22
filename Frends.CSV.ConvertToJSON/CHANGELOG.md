@@ -1,9 +1,9 @@
 # Changelog
 
-## [1.3.0] - 2025-05-12
+## [1.3.0] - 2026-05-22
 ### Changed
-- Update package NewtonsoftJson to version 13.0.4.
-- Refactoring to improve scaling with large CSVs. 
+- Update package Newtonsoft.Json to version 13.0.4.
+- Improved memory usage and performance when converting large CSV files by implementing streaming JSON output. 
 
 ## [1.2.0] - 2025-05-12
 ### Changed

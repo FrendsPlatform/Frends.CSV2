@@ -128,15 +128,8 @@ public static class CSV
                 headers.Add(i.ToString());
 
             int headerCount = headers.Count;
-            writer.WriteStartObject();
-            for (var index = 0; index < headerCount; index++)
-            {
-                writer.WritePropertyName(headers[index]);
-                writer.WriteValue(csvReader.GetField(index));
-            }
-            writer.WriteEndObject();
 
-            while (csvReader.Read())
+            do
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -149,7 +142,7 @@ public static class CSV
                 }
 
                 writer.WriteEndObject();
-            }
+            } while (csvReader.Read());
         }
 
         writer.WriteEndArray();
