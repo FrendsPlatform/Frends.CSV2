@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2025-05-12
+### Changed
+- Update package NewtonsoftJson to version 13.0.4.
+- Refactoring to improve scaling with large CSVs. 
+
 ## [1.2.0] - 2025-05-12
 ### Changed
 - Update package CsvHelper to version 33.1.0.
