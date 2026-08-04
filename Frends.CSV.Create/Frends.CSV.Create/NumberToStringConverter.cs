@@ -6,6 +6,9 @@ namespace Frends.CSV.Create;
 
 class NumberToStringConverter : JsonConverter<JsonElement>
 {
+    /// <summary>
+    /// Reads a JSON element. Not implemented.
+    /// </summary>
     public override JsonElement Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -15,6 +18,9 @@ class NumberToStringConverter : JsonConverter<JsonElement>
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Writes a JSON element, converting numbers to strings.
+    /// </summary>
     public override void Write(
         Utf8JsonWriter writer,
         JsonElement value,
