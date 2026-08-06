@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using Frends.CSV.Create.Definitions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Frends.CSV.Create.UnitTests;
 
-[TestClass]
+[TestFixture]
 public class ErrorHandlerTest
 {
     private const string CustomErrorMessage = "CustomErrorMessage";
@@ -22,44 +22,31 @@ public class ErrorHandlerTest
         ThrowErrorOnFailure = true,
     };
 
-    [TestMethod]
+    [Test]
     public void Should_Throw_Error_When_ThrowErrorOnFailure_Is_True()
     {
-        try
-        {
-            CSV.Create(InvalidInput(), DefaultOptions(), CancellationToken.None);
-            Assert.Fail("Expected exception was not thrown.");
-        }
-        catch (Exception ex)
-        {
-            Assert.IsNotNull(ex);
-        }
+        Assert.That(() =>
+            CSV.Create(InvalidInput(), DefaultOptions(), CancellationToken.None),
+            Throws.Exception);
     }
 
-    [TestMethod]
+    [Test]
     public void Should_Return_Failed_Result_When_ThrowErrorOnFailure_Is_False()
     {
         var options = DefaultOptions();
         options.ThrowErrorOnFailure = false;
         var result = CSV.Create(InvalidInput(), options, CancellationToken.None);
-        Assert.IsFalse(result.Success);
-        Assert.IsNotNull(result.Error);
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.Not.Null);
     }
 
-    [TestMethod]
+    [Test]
     public void Should_Use_Custom_ErrorMessageOnFailure()
     {
         var options = DefaultOptions();
         options.ErrorMessageOnFailure = CustomErrorMessage;
-        try
-        {
-            CSV.Create(InvalidInput(), options, CancellationToken.None);
-            Assert.Fail("Expected exception was not thrown.");
-        }
-        catch (Exception ex)
-        {
-            Assert.IsNotNull(ex);
-            StringAssert.Contains(ex.Message, CustomErrorMessage);
-        }
+        var ex = Assert.Throws<Exception>(() =>
+            CSV.Create(InvalidInput(), options, CancellationToken.None));
+        Assert.That(ex!.Message, Does.Contain(CustomErrorMessage));
     }
 }
