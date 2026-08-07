@@ -50,7 +50,7 @@ public static class CSV
                     cancellationToken),
                 _ => string.Empty
             };
-            return new Result(true, csv);
+            return new Result { Success = true, CSV = csv };
         }
         catch (Exception ex)
         {
