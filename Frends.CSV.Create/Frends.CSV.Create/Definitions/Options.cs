@@ -44,4 +44,19 @@ public class Options
     /// <example>BooleanFormat.Lowercase</example>
     [DefaultValue(BooleanFormat.Lowercase)]
     public BooleanFormat BooleanFormat { get; set; } = BooleanFormat.Lowercase;
+
+    /// <summary>
+    /// If set to true, the task will throw an exception on failure. If false, errors are returned in the result.
+    /// </summary>
+    /// <example>true</example>
+    [DefaultValue(true)]
+    public bool ThrowErrorOnFailure { get; set; } = true;
+
+    /// <summary>
+    /// A custom error message to use when the task fails. Leave empty to use the exception message.
+    /// </summary>
+    /// <example></example>
+    [DisplayFormat(DataFormatString = "Text")]
+    [DefaultValue("")]
+    public string ErrorMessageOnFailure { get; set; } = string.Empty;
 }

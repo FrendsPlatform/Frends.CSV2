@@ -153,11 +153,8 @@ public class UnitTests
     [TestMethod]
     public void CreateTest_WriteFromJSON()
     {
-        const string correctResult =
-            @"user_data.login;user_data.phone;user_data.contact.emails[0];user_data.contact.emails[1];user_data.contact.emails[2];roles[0].roles_list1[0];roles[0].roles_list1[1];roles[1].roles_list2[0];roles[1].roles_list2[1];activation_type
-user1;123321111;user11@frends.com;user12@frends.com;;role1_1;role1_2;role2_1;role2_2;password
-user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;;password
-";
+        var correctResult =
+            $"user_data.login;user_data.phone;user_data.contact.emails[0];user_data.contact.emails[1];user_data.contact.emails[2];roles[0].roles_list1[0];roles[0].roles_list1[1];roles[1].roles_list2[0];roles[1].roles_list2[1];activation_type{Environment.NewLine}user1;123321111;user11@frends.com;user12@frends.com;;role1_1;role1_2;role2_1;role2_2;password{Environment.NewLine}user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;;password{Environment.NewLine}";
 
         var input = new Input
         {
@@ -501,9 +498,7 @@ user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;
 
         var result = CSV.Create(input, options, CancellationToken.None);
         Assert.AreEqual(
-            @"foo
-bar
-",
+            $"foo{Environment.NewLine}bar{Environment.NewLine}",
             result.CSV
         );
     }

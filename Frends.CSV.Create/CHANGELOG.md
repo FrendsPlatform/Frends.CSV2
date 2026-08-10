@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0] - 2026-08-04
+### Added
+- Added error handling options: you can now control whether the task throws an exception on failure (`ThrowErrorOnFailure`) or returns an error result with details (`ErrorMessageOnFailure`).
+- The result object now includes an `Error` property with details when the task fails and `ThrowErrorOnFailure` is set to false.
+### Changed
+- Updated target framework to .NET 8.
+
 ## [1.11.0] - 2026-01-27
 ### Added
 - Added BooleanFormat option to customize boolean output format in CSV (lowercase, PascalCase, or numeric).
