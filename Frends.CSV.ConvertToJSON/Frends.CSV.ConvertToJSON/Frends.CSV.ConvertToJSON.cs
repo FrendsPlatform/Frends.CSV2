@@ -9,9 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using System.Xml;
 
 /// <summary>
 /// CSV Task.
@@ -29,8 +27,13 @@ public static class CSV
     public static Result ConvertToJSON([PropertyTab] Input input, [PropertyTab] Options options, CancellationToken cancellationToken)
     {
         var cultureInfo = new CultureInfo(options.CultureInfo);
-        var resultData = new List<List<object>>();
-        var headers = new List<string>();
+        int columnCount = input.ColumnSpecifications.Length;
+        bool hasColumnSpecs = columnCount > 0;
+
+        using var writer = new JTokenWriter();
+        writer.Formatting = Newtonsoft.Json.Formatting.Indented;
+        writer.Culture = cultureInfo;
+        writer.WriteStartArray();
 
         var configuration = new CsvConfiguration(cultureInfo)
         {
@@ -60,8 +63,9 @@ public static class CSV
             csvReader.ReadHeader();
         }
 
-        if (input.ColumnSpecifications.Any())
+        if (hasColumnSpecs)
         {
+            var headers = new List<string>();
             var typeList = new List<Type>();
 
             foreach (var columnSpec in input.ColumnSpecifications)
@@ -72,58 +76,78 @@ public static class CSV
 
             while (csvReader.Read())
             {
-                var innerList = new List<object>();
-                for (var index = 0; index < input.ColumnSpecifications.Length; index++)
+                cancellationToken.ThrowIfCancellationRequested();
+                writer.WriteStartObject();
+
+                for (var index = 0; index < columnCount; index++)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var obj = csvReader.GetField(typeList[index], index);
-                    innerList.Add(obj);
+                    writer.WritePropertyName(headers[index]);
+                    writer.WriteValue(csvReader.GetField(typeList[index], index));
                 }
-                resultData.Add(innerList);
+
+                writer.WriteEndObject();
             }
         }
-        else if (options.ContainsHeaderRow && !input.ColumnSpecifications.Any())
+        else if (options.ContainsHeaderRow)
         {
-            if (string.Equals(options.ReplaceHeaderWhitespaceWith, " "))
-                headers = csvReader.HeaderRecord.ToList();
-            else
-                headers = csvReader.HeaderRecord.Select(x => x.Replace(" ", options.ReplaceHeaderWhitespaceWith)).ToList();
+            var headerRecord = csvReader.HeaderRecord;
+            var headers = new List<string>(headerRecord.Length);
 
+            if (string.Equals(options.ReplaceHeaderWhitespaceWith, " "))
+                headers.AddRange(headerRecord);
+            else
+            {
+                foreach (var h in headerRecord)
+                    headers.Add(h.Replace(" ", options.ReplaceHeaderWhitespaceWith));
+            }
+
+            int headerCount = headers.Count;
             while (csvReader.Read())
             {
-                var innerList = new List<object>();
-                for (var index = 0; index < csvReader.HeaderRecord.Length; index++)
+                cancellationToken.ThrowIfCancellationRequested();
+                writer.WriteStartObject();
+
+                for (var index = 0; index < headerCount; index++)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var obj = csvReader.GetField(index);
-                    innerList.Add(obj);
+                    writer.WritePropertyName(headers[index]);
+                    writer.WriteValue(csvReader.GetField(index));
                 }
-                resultData.Add(innerList);
+
+                writer.WriteEndObject();
             }
         }
-        else if (!options.ContainsHeaderRow && !input.ColumnSpecifications.Any())
+        else
         {
             if (!csvReader.Read())
                 throw new ArgumentException("CSV input can not be empty");
 
-            headers = csvReader.Parser.Record.Select((x, index) => index.ToString()).ToList();
-            resultData.Add(new List<object>(csvReader.Parser.Record));
-            while (csvReader.Read())
+            var record = csvReader.Parser.Record;
+            var headers = new List<string>(record.Length);
+
+            for (int i = 0; i < record.Length; i++)
+                headers.Add(i.ToString());
+
+            int headerCount = headers.Count;
+
+            do
             {
-                var innerList = new List<object>();
-                for (var index = 0; index < headers.Count; index++)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                writer.WriteStartObject();
+
+                for (var index = 0; index < headerCount; index++)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var obj = csvReader.GetField(index);
-                    innerList.Add(obj);
+                    writer.WritePropertyName(headers[index]);
+                    writer.WriteValue(csvReader.GetField(index));
                 }
-                resultData.Add(innerList);
-            }
+
+                writer.WriteEndObject();
+            } while (csvReader.Read());
         }
 
-        var jToken = WriteJsonString(resultData, cultureInfo, headers, cancellationToken);
+        writer.WriteEndArray();
+        return new Result(true, writer.Token);
 
-        return new Result(true, jToken);
     }
 
     private static Type ToType(ColumnType code, bool useNullables)
@@ -142,25 +166,4 @@ public static class CSV
         };
     }
 
-    private static JToken WriteJsonString(IEnumerable<List<object>> data, CultureInfo culture, IReadOnlyList<string> headers, CancellationToken cancellationToken)
-    {
-        using var writer = new JTokenWriter();
-        writer.Formatting = (Newtonsoft.Json.Formatting)Formatting.Indented;
-        writer.Culture = culture;
-        writer.WriteStartArray();
-        foreach (var row in data)
-        {
-            writer.WriteStartObject();
-
-            for (var i = 0; i < headers.Count; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                writer.WritePropertyName(headers[i]);
-                writer.WriteValue(row[i]);
-            }
-            writer.WriteEndObject();
-        }
-        writer.WriteEndArray();
-        return writer.Token;
-    }
 }
