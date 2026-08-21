@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - 2026-08-20
+## [1.4.0] - 2026-08-20
 ### Changed
 - Upgraded target framework from .NET 6 to .NET 8.
 - Added error handling support with ThrowErrorOnFailure and ErrorMessageOnFailure options.
