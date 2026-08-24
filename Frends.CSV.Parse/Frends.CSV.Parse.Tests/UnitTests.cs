@@ -250,7 +250,6 @@ year;car;mark;price
     }
 
     [TestMethod]
-    [ExpectedException(typeof(CsvHelper.MissingFieldException))]
     public void TestParseTreatMissingFieldsAsNullSetToFalse()
     {
         var csv =
@@ -272,7 +271,8 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = false
         };
 
-        CSV.Parse(input, options, default);
+        var ex = Assert.ThrowsException<Exception>(() => CSV.Parse(input, options, default));
+        Assert.IsInstanceOfType(ex.InnerException, typeof(CsvHelper.MissingFieldException));
     }
 
     [TestMethod]
