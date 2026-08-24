@@ -6,20 +6,27 @@
 public class Result
 {
     /// <summary>
-    /// Operation complete without errors.
+    /// Indicates whether the operation completed successfully.
     /// </summary>
     /// <example>true</example>
-    public bool Success { get; private set; }
+    public bool Success { get; internal set; }
 
     /// <summary>
     /// Result as XML.
     /// </summary>
-    /// <example>"&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;\r\n&lt;Root&gt;\r\n  &lt;Row&gt;\r\n    &lt;value&gt;1&lt;/value&gt;\r\n    &lt;foos&gt;foo&lt;/foos&gt;\r\n    &lt;bars&gt;bar&lt;/bars&gt;\r\n&lt;/Row&gt;\r\n&lt;/Root&gt;"</example>
-    public string Xml { get; private set; }
+    /// <example>&lt;?xml version="1.0" encoding="utf-8"?&gt;&lt;Root&gt;&lt;Row&gt;&lt;value&gt;1&lt;/value&gt;&lt;/Row&gt;&lt;/Root&gt;</example>
+    public string Xml { get; internal set; }
 
-    internal Result(bool success, string xml)
+    /// <summary>
+    /// Error details. Null when Success is true.
+    /// </summary>
+    /// <example>null</example>
+    public Error Error { get; internal set; }
+
+    internal Result(bool success, string xml, Error error = null)
     {
         Success = success;
         Xml = xml;
+        Error = error;
     }
 }

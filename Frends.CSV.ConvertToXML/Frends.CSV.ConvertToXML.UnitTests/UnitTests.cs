@@ -210,7 +210,7 @@ year;car;mark;price
 
         var opt = new Options { ContainsHeaderRow = true, CultureInfo = "fi-FI", TreatMissingFieldsAsNulls = false };
 
-        var ex = Assert.Throws<MissingFieldException>(() => CSV.ConvertToXML(input, opt, CancellationToken.None));
+        var ex = Assert.Throws<Exception>(() => CSV.ConvertToXML(input, opt, CancellationToken.None));
         Assert.IsTrue(ex.Message.StartsWith("Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
     }
 

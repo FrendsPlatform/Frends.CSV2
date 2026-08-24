@@ -3,8 +3,14 @@ using Frends.CSV.ConvertToXML.Definitions;
 
 namespace Frends.CSV.ConvertToXML.Helpers;
 
+/// <summary>
+/// Handles XML node name validation and fixing.
+/// </summary>
 internal static class XmlHandler
 {
+    /// <summary>
+    /// Validates and fixes an XML node name based on the specified action for illegal characters.
+    /// </summary>
     public static string FixedXmlNodeName(
         string nodeName,
         string nodeNamePrefix,
