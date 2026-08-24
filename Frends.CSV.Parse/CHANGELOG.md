@@ -1,9 +1,8 @@
 # Changelog
 
-## [2.0.0] - 2026-08-24
+## [1.7.0] - 2026-08-24
 ### Changed
 - Upgraded target framework from .NET 6 to .NET 8.
-- Made the CSV task class static.
 - Added error handling support: the Task now returns error details instead of throwing when ThrowErrorOnFailure is set to false.
 - Added ThrowErrorOnFailure and ErrorMessageOnFailure options for controlling error behavior.
 
