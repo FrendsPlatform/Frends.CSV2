@@ -1,5 +1,6 @@
-using System;
 using Frends.CSV.Create.Definitions;
+using System;
+using System.Runtime.ExceptionServices;
 
 namespace Frends.CSV.Create;
 
@@ -21,7 +22,7 @@ internal static class ErrorHandler
     private static void ThrowBaseException(Exception exception, string customMessage = null)
     {
         if (string.IsNullOrEmpty(customMessage))
-            throw exception;
+            ExceptionDispatchInfo.Capture(exception).Throw();
 
         throw new Exception(customMessage, exception);
     }

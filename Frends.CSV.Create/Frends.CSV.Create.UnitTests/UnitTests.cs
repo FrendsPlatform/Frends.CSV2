@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Frends.CSV.Create.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -154,7 +153,10 @@ public class UnitTests
     public void CreateTest_WriteFromJSON()
     {
         var correctResult =
-            $"user_data.login;user_data.phone;user_data.contact.emails[0];user_data.contact.emails[1];user_data.contact.emails[2];roles[0].roles_list1[0];roles[0].roles_list1[1];roles[1].roles_list2[0];roles[1].roles_list2[1];activation_type{Environment.NewLine}user1;123321111;user11@frends.com;user12@frends.com;;role1_1;role1_2;role2_1;role2_2;password{Environment.NewLine}user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;;password{Environment.NewLine}";
+            @"user_data.login;user_data.phone;user_data.contact.emails[0];user_data.contact.emails[1];user_data.contact.emails[2];roles[0].roles_list1[0];roles[0].roles_list1[1];roles[1].roles_list2[0];roles[1].roles_list2[1];activation_type
+user1;123321111;user11@frends.com;user12@frends.com;;role1_1;role1_2;role2_1;role2_2;password
+user2;123322222;user21@frends.com;user22@frends.com;user23@frends.com;;;role2_1;;password
+";
 
         var input = new Input
         {
@@ -498,7 +500,9 @@ public class UnitTests
 
         var result = CSV.Create(input, options, CancellationToken.None);
         Assert.AreEqual(
-            $"foo{Environment.NewLine}bar{Environment.NewLine}",
+            @"foo
+bar
+",
             result.CSV
         );
     }
@@ -735,5 +739,26 @@ public class UnitTests
             result.CSV);
     }
 
+    [TestMethod]
+    public void CreateTest_ValuesWithNewlineCharacters_AreQuoted()
+    {
+        const string json = @"[{
+        ""name"": ""Alice"",
+        ""note"": ""line1\nline2""
+    }]";
 
+        var input = new Input
+        {
+            InputType = CreateInputType.Json,
+            Delimiter = ";",
+            Json = json
+        };
+
+        var options = new Options();
+
+        var result = CSV.Create(input, options, CancellationToken.None);
+        Assert.IsTrue(result.Success);
+
+        StringAssert.Contains(result.CSV, "\"line1\nline2\"");
+    }
 }
