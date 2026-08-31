@@ -51,6 +51,7 @@ public static class CSV
                 configuration.MissingFieldFound = null;
 
             using TextReader sr = new StringReader(input.Csv);
+
             // Read rows before passing textreader to csvreader for so that header row would be in the correct place.
             for (var i = 0; i < options.SkipRowsFromTop; i++)
                 sr.ReadLine();
@@ -90,13 +91,19 @@ public static class CSV
             else if (options.ContainsHeaderRow && !input.ColumnSpecifications.Any())
             {
                 if (string.Equals(options.ReplaceHeaderWhitespaceWith, " "))
+                {
                     headers = csvReader.HeaderRecord.ToList();
+                }
                 else
+                {
                     foreach (string header in csvReader.HeaderRecord)
+                    {
                         if (string.IsNullOrEmpty(header) || string.IsNullOrWhiteSpace(header))
                             headers.Add(options.ReplaceHeaderWhitespaceWith);
                         else
                             headers.Add(header.Replace(" ", options.ReplaceHeaderWhitespaceWith));
+                    }
+                }
 
                 while (csvReader.Read())
                 {
