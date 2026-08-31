@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.ExceptionServices;
 using Frends.CSV.ConvertToXML.Definitions;
 
 namespace Frends.CSV.ConvertToXML.Helpers;
@@ -34,7 +35,7 @@ internal static class ErrorHandler
     private static void ThrowBaseException(Exception exception, string customMessage = null)
     {
         if (string.IsNullOrEmpty(customMessage))
-            throw new Exception(exception.Message, exception);
+            ExceptionDispatchInfo.Capture(exception).Throw();
 
         throw new Exception(customMessage, exception);
     }
