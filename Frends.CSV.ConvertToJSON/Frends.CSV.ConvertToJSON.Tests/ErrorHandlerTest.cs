@@ -19,7 +19,7 @@ internal class ErrorHandlerTest
         var options = DefaultOptions();
         options.ThrowErrorOnFailure = true;
 
-        var ex = Assert.Throws<Exception>(() =>
+        var ex = Assert.Throws<System.ArgumentException>(() =>
             CSV.ConvertToJSON(InvalidInput(), options, CancellationToken.None));
         Assert.That(ex, Is.Not.Null);
     }
