@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace Frends.CSV.Parse.Definitions;
 
-namespace Frends.CSV.Parse.Definitions;
+using System.Collections.Generic;
 
 /// <summary>
 /// Task's result.

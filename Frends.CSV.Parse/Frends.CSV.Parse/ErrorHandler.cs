@@ -1,7 +1,8 @@
-using System;
-using Frends.CSV.Parse.Definitions;
-
 namespace Frends.CSV.Parse;
+
+using System;
+using System.Runtime.ExceptionServices;
+using Frends.CSV.Parse.Definitions;
 
 /// <summary>
 /// Converts an exception into a failed Result object or rethrows based on task options.
@@ -34,7 +35,7 @@ internal static class ErrorHandler
     private static void ThrowBaseException(Exception exception, string customMessage = null)
     {
         if (string.IsNullOrEmpty(customMessage))
-            throw new Exception(exception.Message, exception);
+            ExceptionDispatchInfo.Capture(exception).Throw();
 
         throw new Exception(customMessage, exception);
     }

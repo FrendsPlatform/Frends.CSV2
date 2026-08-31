@@ -1,6 +1,6 @@
-using System;
-
 namespace Frends.CSV.Parse.Definitions;
+
+using System;
 
 /// <summary>
 /// Error information returned when the task fails and ThrowErrorOnFailure is false.

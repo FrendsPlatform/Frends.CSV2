@@ -1,8 +1,8 @@
-﻿using System;
+﻿namespace Frends.CSV.Parse.Definitions;
+
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
-namespace Frends.CSV.Parse.Definitions;
 
 /// <summary>
 /// Input parameters.

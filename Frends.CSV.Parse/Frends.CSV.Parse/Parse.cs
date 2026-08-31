@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace Frends.CSV.Parse;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -8,8 +10,6 @@ using System.Threading;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Frends.CSV.Parse.Definitions;
-
-namespace Frends.CSV.Parse;
 
 /// <summary>
 /// CSV Task.
