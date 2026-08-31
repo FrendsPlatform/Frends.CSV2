@@ -271,7 +271,7 @@ value1,value2";
             TreatMissingFieldsAsNulls = false,
         };
 
-        var ex = Assert.Throws<Exception>(() => CSV.ConvertToJSON(input, options, default));
+        var ex = Assert.Throws<CsvHelper.MissingFieldException>(() => CSV.ConvertToJSON(input, options, default));
         Assert.IsTrue(ex.Message.StartsWith("Field at index '2' does not exist. You can ignore missing fields by setting MissingFieldFound to null."));
     }
 
