@@ -51,7 +51,7 @@ public class Options
     /// NOTE: Due to an issue with the CsvHelpers library, all CSV tasks will use the culture info setting of the first CSV task in the process; you cannot use different cultures for reading and parsing CSV files in the same process.|
     /// </summary>
     /// <example>fi-FI</example>
-    public string CultureInfo { get; set; } = "";
+    public string CultureInfo { get; set; } = string.Empty;
 
     /// <summary>
     /// The flag for reader to treat missing fields as nulls instead of throwing a MissingFieldException.

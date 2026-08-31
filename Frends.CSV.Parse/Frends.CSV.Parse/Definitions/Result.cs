@@ -26,7 +26,7 @@ public class Result
     public List<string> Headers { get; internal set; }
 
     /// <summary>
-    /// The culture info used to read/write the entries. 
+    /// The culture info used to read/write the entries.
     /// </summary>
     /// <example>fi-FI</example>
     public string ConfigurationCultureInfo { get; internal set; }

@@ -8,6 +8,9 @@ namespace Frends.CSV.Parse;
 /// </summary>
 internal static class ErrorHandler
 {
+    /// <summary>
+    /// Handles an exception based on the task options.
+    /// </summary>
     /// <param name="exception">The exception to handle.</param>
     /// <param name="options">Task options that control whether failures are returned as a Result object or thrown.</param>
     /// <param name="throwCanceled">

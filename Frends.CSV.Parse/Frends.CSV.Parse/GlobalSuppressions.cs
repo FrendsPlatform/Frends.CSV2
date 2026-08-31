@@ -27,3 +27,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1518:UseLineEndingsCorrectlyAtEndOfFile", Justification = "Following Frends Tasks guidelines")]
 [assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1519:BracesMustNotBeOmittedFromMultiLineChildStatement", Justification = "Following Frends Tasks guidelines")]
 [assembly: SuppressMessage("StyleCop.CSharp.NamingRules", "S101:TypesShouldBeNamedInPascalCase", Justification = "Following Frends Tasks guidelines")]
+[assembly: SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1200:UsingDirectivesMustBePlacedCorrectly", Justification = "File-scoped namespaces")]
+[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Following Frends Tasks guidelines")]
+[assembly: SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1208:SystemUsingDirectivesMustBePlacedBeforeOtherUsingDirectives", Justification = "Following Frends Tasks guidelines")]
