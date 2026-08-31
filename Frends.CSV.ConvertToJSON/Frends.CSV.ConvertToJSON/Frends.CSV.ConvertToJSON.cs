@@ -1,16 +1,16 @@
 ﻿namespace Frends.CSV.ConvertToJSON;
 
-using CsvHelper;
-using CsvHelper.Configuration;
-using Frends.CSV.ConvertToJSON.Definitions;
-using Frends.CSV.ConvertToJSON.Helpers;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Frends.CSV.ConvertToJSON.Definitions;
+using Frends.CSV.ConvertToJSON.Helpers;
+using Newtonsoft.Json.Linq;
 
 /// <summary>
 /// CSV Task.

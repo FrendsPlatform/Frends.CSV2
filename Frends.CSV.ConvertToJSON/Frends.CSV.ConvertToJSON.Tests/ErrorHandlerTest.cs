@@ -13,24 +13,6 @@ internal class ErrorHandlerTest
 {
     private const string CustomErrorMessage = "CustomErrorMessage";
 
-    private static Input InvalidInput()
-    {
-        return new Input
-        {
-            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
-            Delimiter = ",",
-            Csv = string.Empty,
-        };
-    }
-
-    private static Options DefaultOptions()
-    {
-        return new Options
-        {
-            ContainsHeaderRow = false,
-        };
-    }
-
     [Test]
     public void Should_Throw_Error_When_ThrowErrorOnFailure_Is_True()
     {
@@ -65,5 +47,23 @@ internal class ErrorHandlerTest
             CSV.ConvertToJSON(InvalidInput(), options, CancellationToken.None));
         Assert.That(ex, Is.Not.Null);
         Assert.That(ex.Message, Contains.Substring(CustomErrorMessage));
+    }
+
+    private static Input InvalidInput()
+    {
+        return new Input
+        {
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
+            Delimiter = ",",
+            Csv = string.Empty,
+        };
+    }
+
+    private static Options DefaultOptions()
+    {
+        return new Options
+        {
+            ContainsHeaderRow = false,
+        };
     }
 }

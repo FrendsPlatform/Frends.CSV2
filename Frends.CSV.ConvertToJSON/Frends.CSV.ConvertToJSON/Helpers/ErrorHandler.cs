@@ -8,6 +8,9 @@ using Frends.CSV.ConvertToJSON.Definitions;
 /// </summary>
 internal static class ErrorHandler
 {
+    /// <summary>
+    /// Handles an exception by either rethrowing or returning a failed Result.
+    /// </summary>
     /// <param name="exception">The exception to handle.</param>
     /// <param name="options">Task options that control whether failures are returned as a Result object or thrown.</param>
     /// <param name="throwCanceled">
