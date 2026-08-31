@@ -11,6 +11,10 @@ internal static class XmlHandler
     /// <summary>
     /// Validates and fixes an XML node name based on the specified action for illegal characters.
     /// </summary>
+    /// <param name="nodeName">The XML node name to validate and fix.</param>
+    /// <param name="nodeNamePrefix">The prefix to use for illegal node names.</param>
+    /// <param name="illegalNodeNameAction">The action to take when an illegal node name is encountered.</param>
+    /// <returns>A valid XML node name.</returns>
     public static string FixedXmlNodeName(
         string nodeName,
         string nodeNamePrefix,

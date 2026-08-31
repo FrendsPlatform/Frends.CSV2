@@ -22,8 +22,9 @@ public class Input
     /// <example>;</example>
     [DefaultValue(";")]
     public string Delimiter { get; set; } = ";";
+
     /// <summary>
-    /// You can map columns to specific types. 
+    /// You can map columns to specific types.
     /// The order of the columns are used for mapping, that means that the ColumnSpecification elements need to be created in the same order as the CSV fields.
     /// </summary>
     /// <example>[ { foo, String } ]</example>

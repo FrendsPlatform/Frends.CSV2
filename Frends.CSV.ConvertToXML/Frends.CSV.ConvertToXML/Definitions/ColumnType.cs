@@ -5,14 +5,43 @@
 /// </summary>
 public enum ColumnType
 {
-#pragma warning disable CS1591 // self explanatory
+    /// <summary>
+    /// String type.
+    /// </summary>
     String,
+
+    /// <summary>
+    /// Integer type.
+    /// </summary>
     Int,
+
+    /// <summary>
+    /// Long type.
+    /// </summary>
     Long,
+
+    /// <summary>
+    /// Decimal type.
+    /// </summary>
     Decimal,
+
+    /// <summary>
+    /// Double type.
+    /// </summary>
     Double,
+
+    /// <summary>
+    /// Boolean type.
+    /// </summary>
     Boolean,
+
+    /// <summary>
+    /// DateTime type.
+    /// </summary>
     DateTime,
-    Char
-#pragma warning restore CS1591 // self explanatory
+
+    /// <summary>
+    /// Char type.
+    /// </summary>
+    Char,
 }

@@ -53,7 +53,7 @@ public class Options
     /// </summary>
     /// <example>fi-FI</example>
     [DisplayFormat(DataFormatString = "Text")]
-    public string CultureInfo { get; set; } = "";
+    public string CultureInfo { get; set; } = string.Empty;
 
     /// <summary>
     /// The flag for reader to treat missing fields as nulls instead of throwing a MissingFieldException.

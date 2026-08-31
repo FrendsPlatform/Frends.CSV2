@@ -1,7 +1,4 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using Frends.CSV.ConvertToXML.Definitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -10,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Frends.CSV.ConvertToXML.Definitions;
 using Frends.CSV.ConvertToXML.Helpers;
 
 namespace Frends.CSV.ConvertToXML;
@@ -51,7 +51,8 @@ public static class CSV
                 configuration.MissingFieldFound = null;
 
             using TextReader sr = new StringReader(input.Csv);
-            //Read rows before passing textreader to csvreader for so that header row would be in the correct place
+
+            // Read rows before passing textreader to csvreader for so that header row would be in the correct place
             for (var i = 0; i < options.SkipRowsFromTop; i++)
                 sr.ReadLine();
 

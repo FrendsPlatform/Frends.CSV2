@@ -5,7 +5,6 @@ namespace Frends.CSV.ConvertToXML.Definitions;
 /// </summary>
 public enum IllegalNodeNameAction
 {
-
     /// <summary>
     /// If any illegal node name is encountered, a task will throw an error
     /// </summary>
@@ -13,7 +12,7 @@ public enum IllegalNodeNameAction
 
     /// <summary>
     /// Any illegal character will be replaced with "_{ASCII hexcode}_" string
-    /// Node name started with number will have a prefix added 
+    /// Node name started with number will have a prefix added
     /// </summary>
     Overwrite = 2,
 }
