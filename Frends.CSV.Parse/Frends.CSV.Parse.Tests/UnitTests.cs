@@ -1,6 +1,5 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
 
 namespace Frends.CSV.Parse.Tests;
 
@@ -250,6 +249,7 @@ year;car;mark;price
     }
 
     [TestMethod]
+    [ExpectedException(typeof(CsvHelper.MissingFieldException))]
     public void TestParseTreatMissingFieldsAsNullSetToFalse()
     {
         var csv =
@@ -271,8 +271,7 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = false
         };
 
-        var ex = Assert.ThrowsException<MissingFieldException>(() => CSV.Parse(input, options, default));
-        Assert.IsInstanceOfType(ex.InnerException, typeof(CsvHelper.MissingFieldException));
+        CSV.Parse(input, options, default);
     }
 
     [TestMethod]
