@@ -271,7 +271,7 @@ year;car;mark;price
             TreatMissingFieldsAsNulls = false
         };
 
-        var ex = Assert.ThrowsException<Exception>(() => CSV.Parse(input, options, default));
+        var ex = Assert.ThrowsException<MissingFieldException>(() => CSV.Parse(input, options, default));
         Assert.IsInstanceOfType(ex.InnerException, typeof(CsvHelper.MissingFieldException));
     }
 

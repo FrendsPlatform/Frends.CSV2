@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,7 +23,7 @@ public class ErrorHandlerTest
     [TestMethod]
     public void Should_Throw_Error_When_ThrowErrorOnFailure_Is_True()
     {
-        var ex = Assert.ThrowsException<Exception>(() =>
+        var ex = Assert.ThrowsException<ArgumentNullException>(() =>
             CSV.Parse(InvalidInput(), DefaultOptions(), CancellationToken.None));
         Assert.IsNotNull(ex);
     }
