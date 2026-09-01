@@ -30,7 +30,6 @@ public static class CSV
             {
                 Delimiter = input.Delimiter,
                 HasHeaderRecord = options.IncludeHeaderRow,
-                NewLine = Environment.NewLine
             };
 
             if (options.NeverAddQuotesAroundValues)

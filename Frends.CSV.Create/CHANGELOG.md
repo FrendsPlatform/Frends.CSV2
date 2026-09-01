@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.13.0] - 2026-08-27
+### Fixed
+- Removed `NewLine = Environment.NewLine` from `CsvConfiguration` to fix quoting of values containing `\n` or `\r` characters.
+
 ## [1.12.0] - 2026-08-04
 ### Added
 - Added error handling options: you can now control whether the task throws an exception on failure (`ThrowErrorOnFailure`) or returns an error result with details (`ErrorMessageOnFailure`).
