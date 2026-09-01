@@ -53,7 +53,7 @@ public class Options
     /// </summary>
     /// <example>fi-FI</example>
     [DisplayFormat(DataFormatString = "Text")]
-    public string CultureInfo { get; set; } = "";
+    public string CultureInfo { get; set; } = string.Empty;
 
     /// <summary>
     /// The flag for reader to treat missing fields as nulls instead of throwing a MissingFieldException.
@@ -100,4 +100,19 @@ public class Options
     [DefaultValue("")]
     [UIHint(nameof(IllegalNodeNameAction), "", IllegalNodeNameAction.Overwrite)]
     public string IllegalNodeNamePrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Whether to throw an error on failure.
+    /// </summary>
+    /// <example>true</example>
+    [DefaultValue(true)]
+    public bool ThrowErrorOnFailure { get; set; } = true;
+
+    /// <summary>
+    /// Overrides the error message on failure.
+    /// </summary>
+    /// <example>CSV conversion to XML failed: invalid input</example>
+    [DisplayFormat(DataFormatString = "Text")]
+    [DefaultValue("")]
+    public string ErrorMessageOnFailure { get; set; } = string.Empty;
 }

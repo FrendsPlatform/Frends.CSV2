@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0] - 2026-08-24
+
+### Changed
+
+- Target framework updated from net6.0 to net8.0.
+- Added error handling support with ThrowErrorOnFailure and ErrorMessageOnFailure options.
+- Added Error property to the Result object for capturing failure details when ThrowErrorOnFailure is false.
+
 ## [1.5.0] - 2026-01-21
 
 ### Added
