@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿namespace Frends.CSV.Parse.Definitions;
 
-namespace Frends.CSV.Parse.Definitions;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 /// <summary>
 /// Options parameters.
@@ -51,7 +51,7 @@ public class Options
     /// NOTE: Due to an issue with the CsvHelpers library, all CSV tasks will use the culture info setting of the first CSV task in the process; you cannot use different cultures for reading and parsing CSV files in the same process.|
     /// </summary>
     /// <example>fi-FI</example>
-    public string CultureInfo { get; set; } = "";
+    public string CultureInfo { get; set; } = string.Empty;
 
     /// <summary>
     /// The flag for reader to treat missing fields as nulls instead of throwing a MissingFieldException.
@@ -67,4 +67,19 @@ public class Options
     /// <example>false</example>
     [DefaultValue("false")]
     public bool IgnoreQuotes { get; set; }
+
+    /// <summary>
+    /// Whether to throw an error on failure.
+    /// </summary>
+    /// <example>true</example>
+    [DefaultValue(true)]
+    public bool ThrowErrorOnFailure { get; set; } = true;
+
+    /// <summary>
+    /// Overrides the error message on failure.
+    /// </summary>
+    /// <example>CSV parsing failed: invalid input format</example>
+    [DisplayFormat(DataFormatString = "Text")]
+    [DefaultValue("")]
+    public string ErrorMessageOnFailure { get; set; } = string.Empty;
 }

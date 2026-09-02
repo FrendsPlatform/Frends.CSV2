@@ -1,6 +1,5 @@
 using Frends.CSV.Parse.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
 
 namespace Frends.CSV.Parse.Tests;
 
