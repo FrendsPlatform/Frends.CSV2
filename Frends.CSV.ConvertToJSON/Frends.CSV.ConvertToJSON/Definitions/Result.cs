@@ -7,21 +7,21 @@ using Newtonsoft.Json.Linq;
 /// </summary>
 public class Result
 {
-    internal Result(bool success, JToken json)
-    {
-        Success = success;
-        Json = json;
-    }
-
     /// <summary>
-    /// Operation complete without errors.
+    /// Indicates whether the operation completed successfully.
     /// </summary>
     /// <example>true</example>
-    public bool Success { get; private set; }
+    public bool Success { get; internal set; }
 
     /// <summary>
     /// Result as JToken.
     /// </summary>
     /// <example>{[ {"value": "1", "foos": "foo", "bars": "bar"} ]}</example>
-    public dynamic Json { get; private set; }
+    public dynamic Json { get; internal set; }
+
+    /// <summary>
+    /// Error details. Null when Success is true.
+    /// </summary>
+    /// <example>null</example>
+    public Error Error { get; internal set; }
 }

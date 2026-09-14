@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0] - 2026-08-20
+### Changed
+- Upgraded target framework from .NET 6 to .NET 8.
+- Added error handling support with ThrowErrorOnFailure and ErrorMessageOnFailure options.
+- Added Error property to the Result object for accessing error details when ThrowErrorOnFailure is false.
+
 ## [1.3.0] - 2026-05-22
 ### Changed
 - Update package Newtonsoft.Json to version 13.0.4.
