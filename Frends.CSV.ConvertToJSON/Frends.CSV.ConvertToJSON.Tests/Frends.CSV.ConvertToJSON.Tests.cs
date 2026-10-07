@@ -267,11 +267,12 @@ value1,value2";
         {
             ContainsHeaderRow = false,
             CultureInfo = "fi-FI",
+            TrimOutput = true,
             TreatMissingFieldsAsNulls = true,
         };
 
         var json = CSV.ConvertToJSON(input, options, default).Json;
-        Assert.AreEqual(JArray.Parse(@"[{""String"": ""string"",""Decimal"": 1.0,""DateTime"": ""2023-01-01T00:00:00"",""Int"": 2,""Long"": 200,""Double"": 3.0,""Boolean"": true,""Char"": ""N""},{""String"": ""              "",""Decimal"": null,""DateTime"": null,""Int"": null,""Long"": null,""Double"": null,""Boolean"": null,""Char"": null}]"), json);
+        Assert.AreEqual(JArray.Parse(@"[{""String"": ""string"",""Decimal"": 1.0,""DateTime"": ""2023-01-01T00:00:00"",""Int"": 2,""Long"": 200,""Double"": 3.0,""Boolean"": true,""Char"": ""N""},{""String"": """",""Decimal"": null,""DateTime"": null,""Int"": null,""Long"": null,""Double"": null,""Boolean"": null,""Char"": null}]"), json);
     }
 
     [Test]
