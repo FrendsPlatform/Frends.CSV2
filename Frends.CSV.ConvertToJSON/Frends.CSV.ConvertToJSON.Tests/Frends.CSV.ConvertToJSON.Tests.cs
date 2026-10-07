@@ -41,6 +41,31 @@ internal class TestClass
             json[1]);
     }
 
+    [TestCase(true, "Ford", "E350")]
+    [TestCase(false, "  Ford ", " E350  ")]
+    public void ConvertToJSONTest_TrimOutput(bool trimOutput, string expectedCar, string expectedMark)
+    {
+        var csv = "year;car;mark\n1997;  Ford ; E350  ";
+
+        var input = new Input()
+        {
+            ColumnSpecifications = Array.Empty<ColumnSpecification>(),
+            Delimiter = ";",
+            Csv = csv,
+        };
+
+        var options = new Options()
+        {
+            ContainsHeaderRow = true,
+            TrimOutput = trimOutput,
+        };
+
+        var json = CSV.ConvertToJSON(input, options, default).Json;
+        Assert.AreEqual("1997", (string)json[0]["year"]);
+        Assert.AreEqual(expectedCar, (string)json[0]["car"]);
+        Assert.AreEqual(expectedMark, (string)json[0]["mark"]);
+    }
+
     [Test]
     public void ConvertToJSONTest_SkipRowsWithAutomaticHeaders()
     {
