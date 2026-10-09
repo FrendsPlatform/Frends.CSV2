@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.0] - 2026-10-08
+### Fixed
+- Fix inverted logic of trimming option.
+
 ## [1.4.0] - 2026-08-20
 ### Changed
 - Upgraded target framework from .NET 6 to .NET 8.
