@@ -20,5 +20,6 @@ public class Result
     /// <summary>
     /// Error information. Null when Success is true.
     /// </summary>
+    /// <example>null</example>
     public Error Error { get; init; }
 }
