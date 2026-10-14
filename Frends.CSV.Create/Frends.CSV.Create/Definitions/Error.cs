@@ -16,5 +16,6 @@ public class Error
     /// <summary>
     /// The exception that caused the error.
     /// </summary>
+    /// <example>System.FormatException: Input string was not in a correct format.</example>
     public Exception AdditionalInfo { get; internal set; }
 }
